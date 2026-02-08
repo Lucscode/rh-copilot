@@ -10,9 +10,11 @@ let authToken = null;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('[RH Platform] DOMContentLoaded - Inicializando...');
   loadAuth();
   setupEventListeners();
   updateUI();
+  console.log('[RH Platform] Inicializado com sucesso!');
 });
 
 // ============================================
@@ -55,11 +57,23 @@ function logout() {
 // ============================================
 
 function setupEventListeners() {
+  console.log('[Setup] Configurando event listeners...');
+  
   // Auth forms
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
-  if (loginForm) loginForm.addEventListener('submit', handleLogin);
-  if (registerForm) registerForm.addEventListener('submit', handleRegister);
+  
+  console.log('[Setup] Login form:', loginForm);
+  console.log('[Setup] Register form:', registerForm);
+  
+  if (loginForm) {
+    console.log('[Setup] Adicionando listener ao login form');
+    loginForm.addEventListener('submit', handleLogin);
+  }
+  if (registerForm) {
+    console.log('[Setup] Adicionando listener ao register form');
+    registerForm.addEventListener('submit', handleRegister);
+  }
 
   // Tab switching
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -106,28 +120,39 @@ function setupEventListeners() {
 
 async function handleLogin(e) {
   e.preventDefault();
+  console.log('[Login] Tentando fazer login...');
+  
   const email = e.target.email.value;
   const password = e.target.password.value;
   const result = document.getElementById('login-result');
 
+  console.log('[Login] Email:', email);
+
   try {
+    console.log('[Login] Enviando requisição para', `${apiBase}/auth/login/`);
     const response = await fetch(`${apiBase}/auth/login/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
 
+    console.log('[Login] Response status:', response.status);
     const data = await response.json();
+    console.log('[Login] Response data:', data);
+    
     if (response.ok) {
+      console.log('[Login] Sucesso! Salvando auth...');
       saveAuth(data.access_token, data.user);
       updateUI();
       showView('rh-metrics');
       e.target.reset();
       result.innerHTML = '';
     } else {
+      console.log('[Login] Erro:', data.detail);
       result.innerHTML = `<div class="result-message error show">${data.detail || 'Erro ao fazer login'}</div>`;
     }
   } catch (error) {
+    console.error('[Login] Erro:', error);
     result.innerHTML = `<div class="result-message error show">Erro: ${error.message}</div>`;
   }
 }
