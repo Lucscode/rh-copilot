@@ -555,15 +555,15 @@ $('#seed-btn').addEventListener('click', async ()=>{
   btn.disabled = true;
   btn.innerText = '⏳ Carregando...';
   try {
-    await fetch(`${apiBase}/seed`, {method:'POST'});
+    await fetch(`${apiBase}/seed/`, {method:'POST'});
     await loadJobs();
     await loadDocuments();
     if (currentUser && currentUser.role === 'rh') {
       await loadMetrics();
     }
-    alert('🌱 Demo carregada com sucesso!');
+    alert('Demo carregada com sucesso!');
   } catch(e) {
-    alert('❌ Erro ao carregar demo');
+    alert('Erro ao carregar demo');
   }
   btn.disabled = false;
   btn.innerText = '🌱 Popular Demo (Seed)';

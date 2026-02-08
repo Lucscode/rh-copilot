@@ -60,13 +60,13 @@ frontend_path = None
 for path in possible_frontend_paths:
     if path.exists() and path.is_dir():
         frontend_path = path
-        print(f"✅ Frontend encontrado em: {frontend_path}")
+        print(f"[OK] Frontend encontrado em: {frontend_path}")
         break
 
 if frontend_path:
     app.mount("/", StaticFiles(directory=str(frontend_path), html=True), name="frontend")
 else:
-    print(f"⚠️ Frontend não encontrado. Caminhos testados:")
+    print(f"[AVISO] Frontend nao encontrado. Caminhos testados:")
     for path in possible_frontend_paths:
         print(f"   - {path} (exists: {path.exists()})")
 
