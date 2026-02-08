@@ -174,7 +174,7 @@ $('#logout-btn').addEventListener('click', logout);
 // Metrics (RH only)
 async function loadMetrics() {
   try {
-    const res = await fetch(`${apiBase}/metrics`);
+    const res = await fetch(`${apiBase}/metrics/`);
     const data = await res.json();
     
     $('#metric-jobs').textContent = data.total_jobs;
@@ -214,7 +214,7 @@ $('#job-search')?.addEventListener('input', (ev) => {
 });
 
 async function loadJobs(search = ''){
-  let url = `${apiBase}/jobs`;
+  let url = `${apiBase}/jobs/`;
   if (search) url += `?search=${encodeURIComponent(search)}`;
   
   const res = await fetch(url);
@@ -240,7 +240,7 @@ $('#job-form').addEventListener('submit', async (ev)=>{
   ev.preventDefault();
   const fd = new FormData(ev.target);
   const payload = Object.fromEntries(fd.entries());
-  const res = await fetch(`${apiBase}/jobs`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const res = await fetch(`${apiBase}/jobs/`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   const data = await res.json();
   $('#job-result').innerText = data.title ? '✅ Vaga publicada: '+data.title : '❌ Erro: '+JSON.stringify(data);
   if(data.title) {
@@ -254,7 +254,7 @@ $('#candidate-form').addEventListener('submit', async (ev)=>{
   ev.preventDefault();
   const fd = new FormData(ev.target);
   const payload = Object.fromEntries(fd.entries());
-  const res = await fetch(`${apiBase}/candidates`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const res = await fetch(`${apiBase}/candidates/`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   const data = await res.json();
   $('#candidate-result').innerText = data.name ? '✅ Candidato registrado: '+data.name : '❌ Erro: '+JSON.stringify(data);
   if(data.name) ev.target.reset();
@@ -262,7 +262,7 @@ $('#candidate-form').addEventListener('submit', async (ev)=>{
 
 // Documents
 async function loadDocuments(){
-  const res = await fetch(`${apiBase}/documents`);
+  const res = await fetch(`${apiBase}/documents/`);
   const docs = await res.json();
   const el = $('#documents-list');
   if(!docs || docs.length===0){ el.innerText = 'Sem documentos no momento'; return }
@@ -425,7 +425,7 @@ $('#app-interview-form').addEventListener('submit', async (ev)=>{
     notes: fd.get('notes')
   };
 
-  const res = await fetch(`${apiBase}/interviews`, {
+  const res = await fetch(`${apiBase}/interviews/`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(payload)
@@ -448,7 +448,7 @@ $('#app-note-form').addEventListener('submit', async (ev)=>{
     content: fd.get('content')
   };
 
-  const res = await fetch(`${apiBase}/interview-notes`, {
+  const res = await fetch(`${apiBase}/interview-notes/`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(payload)
@@ -466,7 +466,7 @@ $('#app-add-tag-btn').addEventListener('click', async ()=>{
   const tagName = $('#app-new-tag').value.trim();
   if(!tagName) return;
 
-  const res = await fetch(`${apiBase}/tags`, {
+  const res = await fetch(`${apiBase}/tags/`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({name: tagName})
@@ -504,7 +504,7 @@ $('#apply-form').addEventListener('submit', async (ev)=>{
   const fd = new FormData(ev.target);
   const payload = Object.fromEntries(fd.entries());
   
-  const candRes = await fetch(`${apiBase}/candidates`, {
+  const candRes = await fetch(`${apiBase}/candidates/`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({name:payload.name,email:payload.email,resume_text:payload.resume_text})
@@ -512,7 +512,7 @@ $('#apply-form').addEventListener('submit', async (ev)=>{
   const cand = await candRes.json();
   if(!cand.id){ $('#apply-result').innerText = '❌ Erro ao registrar candidato'; return }
   
-  const appRes = await fetch(`${apiBase}/applications`, {
+  const appRes = await fetch(`${apiBase}/applications/`, {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({job_id:payload.job_id,candidate_id:cand.id})
@@ -528,7 +528,7 @@ $('#apply-form').addEventListener('submit', async (ev)=>{
 $('#document-form').addEventListener('submit', async (ev)=>{
   ev.preventDefault();
   const payload = Object.fromEntries(new FormData(ev.target).entries());
-  const res = await fetch(`${apiBase}/documents`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const res = await fetch(`${apiBase}/documents/`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   const data = await res.json();
   if(data.id) {
     ev.target.reset();
@@ -543,7 +543,7 @@ $('#document-form').addEventListener('submit', async (ev)=>{
 $('#chat-form').addEventListener('submit', async (ev)=>{
   ev.preventDefault();
   const payload = Object.fromEntries(new FormData(ev.target).entries());
-  const res = await fetch(`${apiBase}/chat`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const res = await fetch(`${apiBase}/chat/`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
   const data = await res.json();
   $('#chat-answer').innerText = data.answer ? '🤖 '+data.answer : '❌ Sem resposta disponível';
   ev.target.reset();
