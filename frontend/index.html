@@ -20,42 +20,44 @@
     </div>
   </header>
 
-  <!-- Sidebar de Navegação -->
-  <aside id="sidebar" class="sidebar hidden">
-    <nav class="sidebar-nav">
-      <div id="nav-candidato" class="nav-section hidden">
-        <h3>Candidato</h3>
-        <a href="#" data-view="candidate-jobs" class="nav-item">📋 Vagas Disponíveis</a>
-        <a href="#" data-view="candidate-applications" class="nav-item">💼 Minhas Inscrições</a>
-        <a href="#" data-view="candidate-cv" class="nav-item">📄 Meu Currículo</a>
-      </div>
+  <!-- Sidebar + Main Container -->
+  <div id="app">
+    <!-- Sidebar de Navegação -->
+    <aside id="sidebar" class="sidebar hidden">
+      <nav class="sidebar-nav">
+        <div id="nav-candidato" class="nav-section hidden">
+          <h3>Candidato</h3>
+          <a href="#" data-view="candidate-jobs" class="nav-item">📋 Vagas Disponíveis</a>
+          <a href="#" data-view="candidate-applications" class="nav-item">💼 Minhas Inscrições</a>
+          <a href="#" data-view="candidate-cv" class="nav-item">📄 Meu Currículo</a>
+        </div>
 
-      <div id="nav-rh" class="nav-section hidden">
-        <h3>RH & Recrutamento</h3>
-        <a href="#" data-view="rh-metrics" class="nav-item">📊 Métricas & Analytics</a>
-        <a href="#" data-view="rh-jobs" class="nav-item">💼 Gerenciar Vagas</a>
-        <a href="#" data-view="rh-applications" class="nav-item">📥 Candidaturas</a>
-        <a href="#" data-view="rh-documents" class="nav-item">📁 Documentos IA</a>
-        <a href="#" data-view="rh-feed" class="nav-item">🔄 Feed de Atividades</a>
-      </div>
+        <div id="nav-rh" class="nav-section hidden">
+          <h3>RH & Recrutamento</h3>
+          <a href="#" data-view="rh-metrics" class="nav-item">📊 Métricas & Analytics</a>
+          <a href="#" data-view="rh-jobs" class="nav-item">💼 Gerenciar Vagas</a>
+          <a href="#" data-view="rh-applications" class="nav-item">📥 Candidaturas</a>
+          <a href="#" data-view="rh-documents" class="nav-item">📁 Documentos IA</a>
+          <a href="#" data-view="rh-feed" class="nav-item">🔄 Feed de Atividades</a>
+        </div>
 
-      <div id="nav-funcionario" class="nav-section hidden">
-        <h3>RH Chat</h3>
-        <a href="#" data-view="employee-chat" class="nav-item">💬 Chat com RH</a>
-        <a href="#" data-view="employee-profile" class="nav-item">👤 Meu Perfil</a>
-      </div>
+        <div id="nav-funcionario" class="nav-section hidden">
+          <h3>RH Chat</h3>
+          <a href="#" data-view="employee-chat" class="nav-item">💬 Chat com RH</a>
+          <a href="#" data-view="employee-profile" class="nav-item">👤 Meu Perfil</a>
+        </div>
 
-      <div id="nav-admin" class="nav-section hidden">
-        <h3>Administração</h3>
-        <a href="#" data-view="admin-dashboard" class="nav-item">📈 Dashboard Admin</a>
-        <a href="#" data-view="admin-users" class="nav-item">👥 Gerenciar Usuários</a>
-        <a href="#" data-view="admin-system" class="nav-item">⚙️ Configurações Sistema</a>
-      </div>
-    </nav>
-  </aside>
+        <div id="nav-admin" class="nav-section hidden">
+          <h3>Administração</h3>
+          <a href="#" data-view="admin-dashboard" class="nav-item">📈 Dashboard Admin</a>
+          <a href="#" data-view="admin-users" class="nav-item">👥 Gerenciar Usuários</a>
+          <a href="#" data-view="admin-system" class="nav-item">⚙️ Configurações Sistema</a>
+        </div>
+      </nav>
+    </aside>
 
-  <!-- Área Principal -->
-  <main id="app" class="main-content">
+    <!-- Área Principal -->
+    <main class="main-content">
     
     <!-- 1. AUTH VIEW -->
     <section id="auth-view" class="view active">
@@ -316,6 +318,7 @@
     </section>
 
   </main>
+  </div>
 
   <script src="/app.js"></script>
 </body>
