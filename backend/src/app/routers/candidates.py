@@ -1,14 +1,26 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models import Candidate
 from app.schemas.candidates import CandidateCreate, CandidateOut
+from typing import Optional
 
 router = APIRouter()
 
 @router.get("/", response_model=list[CandidateOut])
-def list_candidates(db: Session = Depends(get_db)):
-    return db.query(Candidate).all()
+def list_candidates(
+    search: Optional[str] = Query(None, description="Buscar por nome ou email"),
+    db: Session = Depends(get_db)
+):
+    """Lista candidatos com busca opcional"""
+    query = db.query(Candidate)
+    
+    if search:
+        query = query.filter(
+            (Candidate.name.ilike(f"%{search}%")) | (Candidate.email.ilike(f"%{search}%"))
+        )
+    
+    return query.order_by(Candidate.created_at.desc()).all()
 
 @router.get("/{candidate_id}", response_model=CandidateOut)
 def get_candidate(candidate_id: str, db: Session = Depends(get_db)):

@@ -9,18 +9,105 @@
 <body>
   <header>
     <h1>💼 RH Dashboard</h1>
-    <nav>
-      <a href="#" data-view="dashboard">📊 Dashboard</a>
+    <nav id="main-nav" class="hidden">
+      <a href="#" data-view="metrics">📈 Métricas</a>
+      <a href="#" data-view="dashboard">📊 Vagas</a>
       <a href="#" data-view="create-job">➕ Criar Vaga</a>
       <a href="#" data-view="send-cv">📄 Enviar CV</a>
       <a href="#" data-view="chat">🤖 Chat RH</a>
       <a href="#" data-view="documents">📁 Documentos</a>
     </nav>
+    <div id="user-info" class="hidden">
+      <span id="user-name"></span> (<span id="user-role"></span>)
+      <button id="logout-btn">🚪 Sair</button>
+    </div>
   </header>
 
   <main id="app">
-    <section id="dashboard" class="view">
+    <!-- Login/Register View -->
+    <section id="auth" class="view">
+      <div class="auth-container">
+        <h2>🔐 Acesso ao Sistema</h2>
+        <div class="auth-tabs">
+          <button class="tab-btn active" data-tab="login">Login</button>
+          <button class="tab-btn" data-tab="register">Registrar</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="auth-form">
+          <label>
+            Email
+            <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
+          </label>
+          <label>
+            Senha
+            <input type="password" name="password" placeholder="Sua senha" required />
+          </label>
+          <button type="submit">Entrar</button>
+          <div id="login-result"></div>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" class="auth-form hidden">
+          <label>
+            Nome
+            <input type="text" name="name" placeholder="Seu nome completo" required />
+          </label>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
+          </label>
+          <label>
+            Senha
+            <input type="password" name="password" placeholder="Escolha uma senha" required minlength="6" />
+          </label>
+          <label>
+            Tipo de conta
+            <select name="role" required>
+              <option value="candidato">Candidato</option>
+              <option value="rh">RH / Recrutador</option>
+            </select>
+          </label>
+          <button type="submit">Criar Conta</button>
+          <div id="register-result"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Metrics View (RH only) -->
+    <section id="metrics" class="view hidden">
+      <h2>📈 Painel de Métricas</h2>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h3>Vagas</h3>
+          <div class="metric-value" id="metric-jobs">-</div>
+          <p class="muted">Total de vagas cadastradas</p>
+        </div>
+        <div class="metric-card">
+          <h3>Candidatos</h3>
+          <div class="metric-value" id="metric-candidates">-</div>
+          <p class="muted">Total de candidatos</p>
+        </div>
+        <div class="metric-card">
+          <h3>Candidaturas</h3>
+          <div class="metric-value" id="metric-applications">-</div>
+          <p class="muted">Total de candidaturas</p>
+        </div>
+        <div class="metric-card">
+          <h3>Match Médio</h3>
+          <div class="metric-value" id="metric-avg-score">-</div>
+          <p class="muted">Score médio de compatibilidade</p>
+        </div>
+      </div>
+      <h3>Candidaturas por Status</h3>
+      <div id="status-breakdown" class="status-breakdown"></div>
+    </section>
+
+    <section id="dashboard" class="view hidden">
       <h2>📊 Vagas Disponíveis</h2>
+      <div class="filters">
+        <input type="text" id="job-search" placeholder="🔍 Buscar vagas por título..." />
+      </div>
       <p class="muted">Clique em uma vaga para ver detalhes e gerenciar candidaturas</p>
       <div id="jobs-list">Carregando vagas...</div>
     </section>

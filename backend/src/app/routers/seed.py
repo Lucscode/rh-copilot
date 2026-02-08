@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.db.models import User, Job, Candidate, Application, Document
+from app.db.models import User, Job, Candidate, Application, Document, UserRole, ApplicationStatus
 from app.services.ai_job_description import generate_full_job_description
 from app.services.ai_resume_match import compute_match_score, summarize_candidate
+from app.core.auth import hash_password
 
 router = APIRouter()
 
@@ -15,8 +16,13 @@ def seed(db: Session = Depends(get_db)):
     if existing_rh:
         return {"status": "already_seeded"}
     
-    # user RH
-    rh = User(name="RH Demo", email="rh@demo.com", role="RH")
+    # user RH com senha "password"
+    rh = User(
+        name="RH Demo",
+        email="rh@demo.com",
+        password_hash=hash_password("password"),
+        role=UserRole.RH
+    )
     db.add(rh)
     db.commit()
     db.refresh(rh)
@@ -44,12 +50,19 @@ def seed(db: Session = Depends(get_db)):
     db.commit()
     db.refresh(c1); db.refresh(c2)
 
-    # applications
+    # applications com status
     base_text = f"{job.title}\n{job.short_description}\n{job.full_description or ''}"
     for c in [c1, c2]:
         score = compute_match_score(base_text, c.resume_text)
         summ = summarize_candidate(c.resume_text)
-        db.add(Application(job_id=job.id, candidate_id=c.id, match_score=score, summary=summ))
+        app = Application(
+            job_id=job.id,
+            candidate_id=c.id,
+            match_score=score,
+            summary=summ,
+            status=ApplicationStatus.APLICADO
+        )
+        db.add(app)
     db.commit()
 
     # documents

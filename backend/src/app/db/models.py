@@ -10,6 +10,19 @@ def _uuid() -> str:
     return str(uuid.uuid4())
 
 
+class UserRole(str, PyEnum):
+    RH = "rh"
+    CANDIDATO = "candidato"
+
+
+class ApplicationStatus(str, PyEnum):
+    APLICADO = "aplicado"
+    EM_ANALISE = "em_analise"
+    ENTREVISTA = "entrevista"
+    OFERECIDO = "oferecido"
+    REJEITADO = "rejeitado"
+
+
 class InterviewStatus(str, PyEnum):
     SCHEDULED = "scheduled"
     COMPLETED = "completed"
@@ -22,6 +35,7 @@ class NotificationType(str, PyEnum):
     INTERVIEW_SCHEDULED = "interview_scheduled"
     INTERVIEW_COMPLETED = "interview_completed"
     APPLICATION_REJECTED = "application_rejected"
+    STATUS_CHANGED = "status_changed"
 
 
 class User(Base):
@@ -30,7 +44,8 @@ class User(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
-    role: Mapped[str] = mapped_column(String(20), nullable=False)  # "RH" | "FUNCIONARIO"
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    role: Mapped[str] = mapped_column(SQLEnum(UserRole), default=UserRole.CANDIDATO, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     jobs: Mapped[list["Job"]] = relationship(back_populates="creator")
@@ -83,12 +98,14 @@ class Application(Base):
     job_id: Mapped[str] = mapped_column(String(36), ForeignKey("jobs.id"), nullable=False)
     candidate_id: Mapped[str] = mapped_column(String(36), ForeignKey("candidates.id"), nullable=False)
 
+    status: Mapped[str] = mapped_column(SQLEnum(ApplicationStatus), default=ApplicationStatus.APLICADO, nullable=False)
     match_score: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
     summary: Mapped[str] = mapped_column(Text, nullable=True)
     tags: Mapped[str] = mapped_column(Text, nullable=True)  # JSON array como string: ["tag1", "tag2"]
     internal_notes: Mapped[str] = mapped_column(Text, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     job: Mapped["Job"] = relationship(back_populates="applications")
     candidate: Mapped["Candidate"] = relationship(back_populates="applications")

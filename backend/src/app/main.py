@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from app.core.config import settings
-from app.routers import users, jobs, candidates, applications, documents, chat, seed, interviews, interview_notes, tags, notifications, cv_uploads
+from app.routers import users, jobs, candidates, applications, documents, chat, seed, interviews, interview_notes, tags, notifications, cv_uploads, auth, metrics
 from app.db.session import engine
 from app.db.models import Base
 from app.core.cors import setup_cors
@@ -29,6 +29,8 @@ def health():
 Base.metadata.create_all(bind=engine)
 
 # Registra todos os routers ANTES de montar StaticFiles
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
+app.include_router(metrics.router, prefix="/api/metrics", tags=["metrics"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(jobs.router, prefix="/api/jobs", tags=["jobs"])
 app.include_router(candidates.router, prefix="/api/candidates", tags=["candidates"])
