@@ -13,7 +13,7 @@ from app.db.models import Base
 from app.core.cors import setup_cors
 
 
-app = FastAPI(title=settings.app_name)
+app = FastAPI(title="RH Copilot - Sistema Inteligente de Gestão de Talentos")
 
 # Setup CORS para demo público
 setup_cors(app)

@@ -1,5 +1,5 @@
 // ============================================
-// RH PLATFORM - Multi-Portal Navigation
+// RH COPILOT - Multi-Portal Navigation
 // ============================================
 
 const apiBase = '/api';
@@ -10,11 +10,11 @@ let authToken = null;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('[RH Platform] DOMContentLoaded - Inicializando...');
+  console.log('[RH Copilot] DOMContentLoaded - Inicializando...');
   loadAuth();
   setupEventListeners();
   updateUI();
-  console.log('[RH Platform] Inicializado com sucesso!');
+  console.log('[RH Copilot] Inicializado com sucesso!');
 });
 
 // ============================================
