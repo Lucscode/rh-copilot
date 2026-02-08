@@ -3,284 +3,319 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RH Dashboard - Gestão de Talentos</title>
+  <title>RH Platform - Sistema Integrado de Gestão de Talentos</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <header>
-    <h1>💼 RH Dashboard</h1>
-    <nav id="main-nav" class="hidden">
-      <a href="#" data-view="metrics">📈 Métricas</a>
-      <a href="#" data-view="dashboard">📊 Vagas</a>
-      <a href="#" data-view="create-job">➕ Criar Vaga</a>
-      <a href="#" data-view="send-cv">📄 Enviar CV</a>
-      <a href="#" data-view="chat">🤖 Chat RH</a>
-      <a href="#" data-view="documents">📁 Documentos</a>
-    </nav>
-    <div id="user-info" class="hidden">
-      <span id="user-name"></span> (<span id="user-role"></span>)
-      <button id="logout-btn">🚪 Sair</button>
+  <!-- Header Principal -->
+  <header class="main-header" id="main-header">
+    <div class="header-content">
+      <div class="logo">
+        <h1>🎯 RH Platform</h1>
+      </div>
+      <div id="user-info" class="user-info hidden">
+        <span id="user-display"></span>
+        <button id="logout-btn" class="btn-logout">Sair</button>
+      </div>
     </div>
   </header>
 
-  <main id="app">
-    <!-- Login/Register View -->
-    <section id="auth" class="view">
+  <!-- Sidebar de Navegação -->
+  <aside id="sidebar" class="sidebar hidden">
+    <nav class="sidebar-nav">
+      <div id="nav-candidato" class="nav-section hidden">
+        <h3>Candidato</h3>
+        <a href="#" data-view="candidate-jobs" class="nav-item">📋 Vagas Disponíveis</a>
+        <a href="#" data-view="candidate-applications" class="nav-item">💼 Minhas Inscrições</a>
+        <a href="#" data-view="candidate-cv" class="nav-item">📄 Meu Currículo</a>
+      </div>
+
+      <div id="nav-rh" class="nav-section hidden">
+        <h3>RH & Recrutamento</h3>
+        <a href="#" data-view="rh-metrics" class="nav-item">📊 Métricas & Analytics</a>
+        <a href="#" data-view="rh-jobs" class="nav-item">💼 Gerenciar Vagas</a>
+        <a href="#" data-view="rh-applications" class="nav-item">📥 Candidaturas</a>
+        <a href="#" data-view="rh-documents" class="nav-item">📁 Documentos IA</a>
+        <a href="#" data-view="rh-feed" class="nav-item">🔄 Feed de Atividades</a>
+      </div>
+
+      <div id="nav-funcionario" class="nav-section hidden">
+        <h3>RH Chat</h3>
+        <a href="#" data-view="employee-chat" class="nav-item">💬 Chat com RH</a>
+        <a href="#" data-view="employee-profile" class="nav-item">👤 Meu Perfil</a>
+      </div>
+
+      <div id="nav-admin" class="nav-section hidden">
+        <h3>Administração</h3>
+        <a href="#" data-view="admin-dashboard" class="nav-item">📈 Dashboard Admin</a>
+        <a href="#" data-view="admin-users" class="nav-item">👥 Gerenciar Usuários</a>
+        <a href="#" data-view="admin-system" class="nav-item">⚙️ Configurações Sistema</a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Área Principal -->
+  <main id="app" class="main-content">
+    
+    <!-- 1. AUTH VIEW -->
+    <section id="auth-view" class="view active">
       <div class="auth-container">
-        <h2>🔐 Acesso ao Sistema</h2>
-        <div class="auth-tabs">
-          <button class="tab-btn active" data-tab="login">Login</button>
-          <button class="tab-btn" data-tab="register">Registrar</button>
+        <div class="auth-box">
+          <h2>Bem-vindo ao RH Platform</h2>
+          <p class="subtitle">Sistema Integrado de Gestão de Talentos</p>
+          
+          <div class="auth-tabs">
+            <button class="tab-btn active" data-tab="login">Login</button>
+            <button class="tab-btn" data-tab="register">Registrar</button>
+          </div>
+
+          <!-- Login Form -->
+          <form id="login-form" class="auth-form">
+            <label>
+              Email
+              <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
+            </label>
+            <label>
+              Senha
+              <input type="password" name="password" placeholder="Sua senha" required />
+            </label>
+            <button type="submit" class="btn-primary">Entrar</button>
+            <div id="login-result" class="result-message"></div>
+          </form>
+
+          <!-- Register Form -->
+          <form id="register-form" class="auth-form hidden">
+            <label>
+              Nome Completo
+              <input type="text" name="name" placeholder="Seu nome" required />
+            </label>
+            <label>
+              Email
+              <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
+            </label>
+            <label>
+              Senha
+              <input type="password" name="password" placeholder="Min. 6 caracteres" required minlength="6" />
+            </label>
+            <label>
+              Tipo de Conta
+              <select name="role" required>
+                <option value="">Selecione...</option>
+                <option value="candidato">Candidato</option>
+                <option value="funcionario">Funcionário</option>
+                <option value="rh">RH/Recrutador</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </label>
+            <button type="submit" class="btn-primary">Registrar</button>
+            <div id="register-result" class="result-message"></div>
+          </form>
+
+          <div class="demo-info">
+            <p><strong>Demo:</strong> Email: <code>rh@demo.com</code> | Senha: <code>password</code></p>
+            <button id="seed-btn" class="btn-secondary" type="button">Carregar Dados Demo</button>
+          </div>
         </div>
-
-        <!-- Login Form -->
-        <form id="login-form" class="auth-form">
-          <label>
-            Email
-            <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
-          </label>
-          <label>
-            Senha
-            <input type="password" name="password" placeholder="Sua senha" required />
-          </label>
-          <button type="submit">Entrar</button>
-          <div id="login-result"></div>
-        </form>
-
-        <!-- Register Form -->
-        <form id="register-form" class="auth-form hidden">
-          <label>
-            Nome
-            <input type="text" name="name" placeholder="Seu nome completo" required />
-          </label>
-          <label>
-            Email
-            <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
-          </label>
-          <label>
-            Senha
-            <input type="password" name="password" placeholder="Escolha uma senha" required minlength="6" />
-          </label>
-          <label>
-            Tipo de conta
-            <select name="role" required>
-              <option value="candidato">Candidato</option>
-              <option value="rh">RH / Recrutador</option>
-            </select>
-          </label>
-          <button type="submit">Criar Conta</button>
-          <div id="register-result"></div>
-        </form>
       </div>
     </section>
 
-    <!-- Metrics View (RH only) -->
-    <section id="metrics" class="view hidden">
-      <h2>📈 Painel de Métricas</h2>
+    <!-- 2. CANDIDATE PORTAL -->
+    <section id="candidate-jobs" class="view">
+      <h2>Vagas Disponíveis</h2>
+      <div class="search-bar">
+        <input type="text" id="search-jobs" placeholder="Buscar vagas..." />
+      </div>
+      <div id="jobs-list" class="jobs-grid"></div>
+    </section>
+
+    <section id="candidate-applications" class="view">
+      <h2>Minhas Inscrições</h2>
+      <div id="my-applications" class="applications-list"></div>
+    </section>
+
+    <section id="candidate-cv" class="view">
+      <h2>Meu Currículo</h2>
+      <form id="cv-form" class="form-container">
+        <label>
+          Fazer Upload do CV (PDF/DOC)
+          <input type="file" name="cv" accept=".pdf,.doc,.docx" />
+        </label>
+        <label>
+          Resumo Profissional
+          <textarea name="summary" placeholder="Fale sobre sua experiência..."></textarea>
+        </label>
+        <button type="submit" class="btn-primary">Atualizar CV</button>
+      </form>
+    </section>
+
+    <!-- 3. RH PORTAL -->
+    <section id="rh-metrics" class="view">
+      <h2>Painel de Métricas</h2>
       <div class="metrics-grid">
         <div class="metric-card">
-          <h3>Vagas</h3>
+          <h3>Vagas Ativas</h3>
           <div class="metric-value" id="metric-jobs">-</div>
-          <p class="muted">Total de vagas cadastradas</p>
         </div>
         <div class="metric-card">
           <h3>Candidatos</h3>
           <div class="metric-value" id="metric-candidates">-</div>
-          <p class="muted">Total de candidatos</p>
         </div>
         <div class="metric-card">
           <h3>Candidaturas</h3>
           <div class="metric-value" id="metric-applications">-</div>
-          <p class="muted">Total de candidaturas</p>
         </div>
         <div class="metric-card">
           <h3>Match Médio</h3>
-          <div class="metric-value" id="metric-avg-score">-</div>
-          <p class="muted">Score médio de compatibilidade</p>
+          <div class="metric-value" id="metric-avg-score">-%</div>
         </div>
       </div>
-      <h3>Candidaturas por Status</h3>
-      <div id="status-breakdown" class="status-breakdown"></div>
-    </section>
-
-    <section id="dashboard" class="view hidden">
-      <h2>📊 Vagas Disponíveis</h2>
-      <div class="filters">
-        <input type="text" id="job-search" placeholder="🔍 Buscar vagas por título..." />
+      <div class="chart-container">
+        <h3>Candidaturas por Status</h3>
+        <div id="status-chart" class="status-chart"></div>
       </div>
-      <p class="muted">Clique em uma vaga para ver detalhes e gerenciar candidaturas</p>
-      <div id="jobs-list">Carregando vagas...</div>
     </section>
 
-    <section id="job-detail" class="view hidden">
-      <button id="back-to-list">← Voltar para Vagas</button>
-      <h2 id="job-title">Título da vaga</h2>
-      <div id="job-full" class="muted">Descrição completa...</div>
-
-      <h3>👥 Candidaturas Recebidas</h3>
-      <div id="applications-list">Carregando candidaturas...</div>
-
-      <h3>📝 Enviar Candidatura</h3>
-      <form id="apply-form">
-        <label>
-          Nome
-          <input type="text" name="name" placeholder="Seu nome completo" required />
-        </label>
-        <label>
-          Email
-          <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
-        </label>
-        <label>
-          Texto do Currículo
-          <textarea name="resume_text" placeholder="Suas habilidades e experiência..." required></textarea>
-        </label>
-        <input type="hidden" name="job_id" id="apply-job-id" />
-        <button type="submit">🚀 Candidatar-me</button>
-      </form>
-      <div id="apply-result"></div>
-    </section>
-
-    <section id="create-job" class="view hidden">
-      <h2>➕ Criar Nova Vaga</h2>
-      <p class="muted">Preencha os detalhes da vaga e deixe a IA expandir a descrição</p>
-      <form id="job-form">
-        <label>
-          Título da Vaga
-          <input type="text" name="title" placeholder="ex: Senior Python Developer" required />
-        </label>
-        <label>
-          Resumo Curto
-          <textarea name="short_description" placeholder="Descrição breve dos requisitos..." required></textarea>
-        </label>
-        <label>
-          Criado por
-          <input type="text" name="created_by" value="rh@demo.com" required />
-        </label>
-        <button type="submit">Publicar Vaga</button>
-      </form>
-      <div id="job-result"></div>
-    </section>
-
-    <section id="send-cv" class="view hidden">
-      <h2>📄 Enviar Currículo</h2>
-      <p class="muted">Candidatos podem se registrar e se inscrever em vagas</p>
-      <form id="candidate-form">
-        <label>
-          Nome Completo
-          <input type="text" name="name" placeholder="Seu nome" required />
-        </label>
-        <label>
-          Email
-          <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
-        </label>
-        <label>
-          Texto do Currículo
-          <textarea name="resume_text" placeholder="Python, FastAPI, Docker, 5+ anos de experiência..." required></textarea>
-        </label>
-        <button type="submit">Enviar Candidatura</button>
-      </form>
-      <div id="candidate-result"></div>
-    </section>
-
-    <section id="chat" class="view hidden">
-      <h2>🤖 Chat com Assistente RH</h2>
-      <p class="muted">Faça perguntas sobre políticas e documentação da empresa</p>
-      <form id="chat-form">
-        <label>
-          Seu Email
-          <input type="text" name="user_id" value="rh@demo.com" placeholder="seu.email@exemplo.com" required />
-        </label>
-        <label>
-          Sua Pergunta
-          <textarea name="question" placeholder="Qual é a política de férias? Qual é o vale refeição?" required></textarea>
-        </label>
-        <button type="submit">Enviar Pergunta</button>
-      </form>
-      <div id="chat-answer"></div>
-    </section>
-
-    <section id="documents" class="view hidden">
-      <h2>📁 Documentos da Empresa</h2>
-      <p class="muted">Gerencie políticas e documentos internos</p>
-      <form id="document-form">
-        <label>
-          Título do Documento
-          <input type="text" name="title" placeholder="ex: Política de Férias 2026" required />
-        </label>
-        <label>
-          Conteúdo
-          <textarea name="content" placeholder="Descreva a política aqui..." required></textarea>
-        </label>
-        <button type="submit">Salvar Documento</button>
-      </form>
-      <div id="documents-list">Carregando documentos...</div>
-    </section>
-
-    <section id="application-detail" class="view hidden">
-      <button id="back-to-job">← Voltar para Vaga</button>
-      <h2>👤 <span id="app-candidate-name">Candidato</span></h2>
-      <div class="app-meta">
-        <span class="muted">📧 <span id="app-candidate-email">-</span></span>
-        <span class="match-score" id="app-match-display">- % match</span>
+    <section id="rh-jobs" class="view">
+      <h2>Gerenciar Vagas</h2>
+      <button class="btn-primary btn-large" id="create-job-btn">➕ Criar Nova Vaga</button>
+      
+      <div id="create-job-form" class="form-container hidden">
+        <form id="job-form">
+          <label>
+            Título da Vaga
+            <input type="text" name="title" placeholder="Ex: Desenvolvedor Python Senior" required />
+          </label>
+          <label>
+            Descrição
+            <textarea name="description" placeholder="Descreva a vaga..." required></textarea>
+          </label>
+          <label>
+            Requisitos
+            <textarea name="requirements" placeholder="Liste os requisitos..." required></textarea>
+          </label>
+          <label>
+            Salário (Opcional)
+            <input type="text" name="salary" placeholder="Ex: R$ 5.000 - R$ 8.000" />
+          </label>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Publicar Vaga</button>
+            <button type="button" class="btn-secondary" id="cancel-job-btn">Cancelar</button>
+          </div>
+        </form>
       </div>
 
-      <h3>📄 Currículo</h3>
-      <div id="app-resume" class="resume-box">Carregando...</div>
-
-      <h3>📥 Upload/Download de CV</h3>
-      <form id="app-cv-form" style="display:flex; gap:8px; margin-bottom:16px">
-        <input type="file" id="app-cv-file" accept=".pdf,.doc,.docx,.txt" />
-        <button type="submit">Fazer Upload</button>
-      </form>
-      <div id="app-cv-result"></div>
-      <div id="app-cv-link" style="margin-bottom:16px"></div>
-
-      <h3>🏷️ Tags e Classificação</h3>
-      <div id="app-tags-list" style="margin-bottom:12px">Nenhuma tag ainda</div>
-      <form id="app-tag-form" style="display:flex; gap:8px; margin-bottom:16px">
-        <input type="text" placeholder="Adicionar tag (coluna, tech stack, etc)" id="app-new-tag" />
-        <button type="button" id="app-add-tag-btn">Adicionar</button>
-      </form>
-
-      <h3>📅 Agendamento de Entrevista</h3>
-      <div id="app-interviews-list" style="margin-bottom:16px">Sem entrevistas agendadas</div>
-      <form id="app-interview-form">
-        <label>
-          Data e Hora
-          <input type="datetime-local" name="scheduled_at" required />
-        </label>
-        <label>
-          Tipo
-          <select name="type">
-            <option value="phone">☎️ Telefone</option>
-            <option value="video">📹 Vídeo</option>
-            <option value="in-person">👥 Presencial</option>
-          </select>
-        </label>
-        <label>
-          Notas
-          <textarea name="notes" placeholder="Instruções para a entrevista..."></textarea>
-        </label>
-        <button type="submit">🗓️ Agendar Entrevista</button>
-      </form>
-      <div id="app-interview-result"></div>
-
-      <h3>📝 Notas Internas do RH</h3>
-      <div id="app-notes-list" style="margin-bottom:16px">Sem notas</div>
-      <form id="app-note-form">
-        <label>
-          Sua Nota
-          <textarea name="content" placeholder="Feedback interno sobre este candidato..." required></textarea>
-        </label>
-        <button type="submit">💬 Adicionar Nota</button>
-      </form>
-      <div id="app-note-result"></div>
+      <div id="rh-jobs-list" class="jobs-grid"></div>
     </section>
+
+    <section id="rh-applications" class="view">
+      <h2>Candidaturas Recebidas</h2>
+      <div class="filter-bar">
+        <select id="status-filter">
+          <option value="">Todos os Status</option>
+          <option value="aplicado">Aplicado</option>
+          <option value="em_analise">Em Análise</option>
+          <option value="entrevista">Entrevista</option>
+          <option value="oferecido">Oferecido</option>
+          <option value="rejeitado">Rejeitado</option>
+        </select>
+      </div>
+      <div id="rh-applications-list" class="applications-list"></div>
+    </section>
+
+    <section id="rh-documents" class="view">
+      <h2>Documentos para Alimentar IA</h2>
+      <p class="subtitle">Upload de políticas, procedimentos e documentos para melhorar o Chat RH</p>
+      
+      <div class="upload-area">
+        <form id="document-form">
+          <label>
+            Nome do Documento
+            <input type="text" name="title" placeholder="Ex: Política de Férias" required />
+          </label>
+          <label>
+            Descrição
+            <textarea name="description" placeholder="Do que se trata este documento?" required></textarea>
+          </label>
+          <label>
+            Arquivo
+            <input type="file" name="file" accept=".pdf,.doc,.docx,.txt" required />
+          </label>
+          <button type="submit" class="btn-primary">Enviar Documento</button>
+        </form>
+      </div>
+
+      <div id="documents-list" class="documents-grid"></div>
+    </section>
+
+    <section id="rh-feed" class="view">
+      <h2>Feed de Atividades</h2>
+      <div id="activities-feed" class="activities-list"></div>
+    </section>
+
+    <!-- 4. EMPLOYEE (FUNCIONARIO) PORTAL -->
+    <section id="employee-chat" class="view">
+      <h2>Chat com RH - Bot Assistente</h2>
+      <div class="chat-container">
+        <div id="chat-messages" class="chat-messages"></div>
+        <form id="chat-form" class="chat-input">
+          <input type="text" id="chat-input" placeholder="Faça sua pergunta..." required />
+          <button type="submit" class="btn-primary">Enviar</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="employee-profile" class="view">
+      <h2>Meu Perfil</h2>
+      <div class="profile-container">
+        <h3>Informações Pessoais</h3>
+        <div id="profile-info" class="info-card"></div>
+      </div>
+    </section>
+
+    <!-- 5. ADMIN PORTAL -->
+    <section id="admin-dashboard" class="view">
+      <h2>Dashboard Administrativo</h2>
+      <div class="admin-metrics-grid">
+        <div class="admin-card">
+          <h3>Usuários Totais</h3>
+          <div class="big-number" id="admin-total-users">-</div>
+        </div>
+        <div class="admin-card">
+          <h3>RHs Ativos</h3>
+          <div class="big-number" id="admin-rhs">-</div>
+        </div>
+        <div class="admin-card">
+          <h3>Funcionários</h3>
+          <div class="big-number" id="admin-employees">-</div>
+        </div>
+        <div class="admin-card">
+          <h3>Status do Sistema</h3>
+          <div class="big-number" id="admin-status">✅ Online</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin-users" class="view">
+      <h2>Gerenciar Usuários</h2>
+      <div id="admin-users-list" class="users-table"></div>
+    </section>
+
+    <section id="admin-system" class="view">
+      <h2>Configurações do Sistema</h2>
+      <div class="settings-container">
+        <div class="setting-item">
+          <h3>Banco de Dados</h3>
+          <p id="db-info">-</p>
+        </div>
+        <div class="setting-item">
+          <h3>API</h3>
+          <button id="test-api-btn" class="btn-secondary">Testar API</button>
+          <p id="api-status">-</p>
+        </div>
+      </div>
+    </section>
+
   </main>
-
-  <footer>
-    <button id="seed-btn">🌱 Popular Demo (Seed)</button>
-  </footer>
 
   <script src="/app.js"></script>
 </body>

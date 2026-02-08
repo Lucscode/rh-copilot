@@ -11,8 +11,10 @@ def _uuid() -> str:
 
 
 class UserRole(str, PyEnum):
-    RH = "rh"
     CANDIDATO = "candidato"
+    RH = "rh"
+    FUNCIONARIO = "funcionario"
+    ADMIN = "admin"
 
 
 class ApplicationStatus(str, PyEnum):
