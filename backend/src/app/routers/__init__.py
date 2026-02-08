@@ -1,1 +1,1 @@
-from . import users, jobs, candidates, applications, documents, chat, seed
+from . import users, jobs, candidates, applications, documents, chat, seed, interviews, interview_notes, tags, notifications, cv_uploads

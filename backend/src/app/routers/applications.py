@@ -7,6 +7,10 @@ from app.services.ai_resume_match import compute_match_score, summarize_candidat
 
 router = APIRouter()
 
+@router.get("/", response_model=list[ApplicationOut])
+def list_applications(db: Session = Depends(get_db)):
+    return db.query(Application).all()
+
 @router.post("/", response_model=ApplicationOut)
 def create_application(payload: ApplicationCreate, db: Session = Depends(get_db)):
     job = db.query(Job).filter(Job.id == payload.job_id).first()

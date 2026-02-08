@@ -4,9 +4,20 @@ __pycache__/
 *.pyo
 *.env
 
-# VS Code
-.vscode/
+# Database
+*.db
+dev.db
 
-# Byte-compiled / distribution
+# File uploads
+cv_storage/
+uploads/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Distribution
 build/
 dist/
+*.egg-info/

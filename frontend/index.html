@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RH Dashboard - Gestão de Talentos</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>💼 RH Dashboard</h1>
+    <nav>
+      <a href="#" data-view="dashboard">📊 Dashboard</a>
+      <a href="#" data-view="create-job">➕ Criar Vaga</a>
+      <a href="#" data-view="send-cv">📄 Enviar CV</a>
+      <a href="#" data-view="chat">🤖 Chat RH</a>
+      <a href="#" data-view="documents">📁 Documentos</a>
+    </nav>
+  </header>
+
+  <main id="app">
+    <section id="dashboard" class="view">
+      <h2>📊 Vagas Disponíveis</h2>
+      <p class="muted">Clique em uma vaga para ver detalhes e gerenciar candidaturas</p>
+      <div id="jobs-list">Carregando vagas...</div>
+    </section>
+
+    <section id="job-detail" class="view hidden">
+      <button id="back-to-list">← Voltar para Vagas</button>
+      <h2 id="job-title">Título da vaga</h2>
+      <div id="job-full" class="muted">Descrição completa...</div>
+
+      <h3>👥 Candidaturas Recebidas</h3>
+      <div id="applications-list">Carregando candidaturas...</div>
+
+      <h3>📝 Enviar Candidatura</h3>
+      <form id="apply-form">
+        <label>
+          Nome
+          <input type="text" name="name" placeholder="Seu nome completo" required />
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
+        </label>
+        <label>
+          Texto do Currículo
+          <textarea name="resume_text" placeholder="Suas habilidades e experiência..." required></textarea>
+        </label>
+        <input type="hidden" name="job_id" id="apply-job-id" />
+        <button type="submit">🚀 Candidatar-me</button>
+      </form>
+      <div id="apply-result"></div>
+    </section>
+
+    <section id="create-job" class="view hidden">
+      <h2>➕ Criar Nova Vaga</h2>
+      <p class="muted">Preencha os detalhes da vaga e deixe a IA expandir a descrição</p>
+      <form id="job-form">
+        <label>
+          Título da Vaga
+          <input type="text" name="title" placeholder="ex: Senior Python Developer" required />
+        </label>
+        <label>
+          Resumo Curto
+          <textarea name="short_description" placeholder="Descrição breve dos requisitos..." required></textarea>
+        </label>
+        <label>
+          Criado por
+          <input type="text" name="created_by" value="rh@demo.com" required />
+        </label>
+        <button type="submit">Publicar Vaga</button>
+      </form>
+      <div id="job-result"></div>
+    </section>
+
+    <section id="send-cv" class="view hidden">
+      <h2>📄 Enviar Currículo</h2>
+      <p class="muted">Candidatos podem se registrar e se inscrever em vagas</p>
+      <form id="candidate-form">
+        <label>
+          Nome Completo
+          <input type="text" name="name" placeholder="Seu nome" required />
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
+        </label>
+        <label>
+          Texto do Currículo
+          <textarea name="resume_text" placeholder="Python, FastAPI, Docker, 5+ anos de experiência..." required></textarea>
+        </label>
+        <button type="submit">Enviar Candidatura</button>
+      </form>
+      <div id="candidate-result"></div>
+    </section>
+
+    <section id="chat" class="view hidden">
+      <h2>🤖 Chat com Assistente RH</h2>
+      <p class="muted">Faça perguntas sobre políticas e documentação da empresa</p>
+      <form id="chat-form">
+        <label>
+          Seu Email
+          <input type="text" name="user_id" value="rh@demo.com" placeholder="seu.email@exemplo.com" required />
+        </label>
+        <label>
+          Sua Pergunta
+          <textarea name="question" placeholder="Qual é a política de férias? Qual é o vale refeição?" required></textarea>
+        </label>
+        <button type="submit">Enviar Pergunta</button>
+      </form>
+      <div id="chat-answer"></div>
+    </section>
+
+    <section id="documents" class="view hidden">
+      <h2>📁 Documentos da Empresa</h2>
+      <p class="muted">Gerencie políticas e documentos internos</p>
+      <form id="document-form">
+        <label>
+          Título do Documento
+          <input type="text" name="title" placeholder="ex: Política de Férias 2026" required />
+        </label>
+        <label>
+          Conteúdo
+          <textarea name="content" placeholder="Descreva a política aqui..." required></textarea>
+        </label>
+        <button type="submit">Salvar Documento</button>
+      </form>
+      <div id="documents-list">Carregando documentos...</div>
+    </section>
+
+    <section id="application-detail" class="view hidden">
+      <button id="back-to-job">← Voltar para Vaga</button>
+      <h2>👤 <span id="app-candidate-name">Candidato</span></h2>
+      <div class="app-meta">
+        <span class="muted">📧 <span id="app-candidate-email">-</span></span>
+        <span class="match-score" id="app-match-display">- % match</span>
+      </div>
+
+      <h3>📄 Currículo</h3>
+      <div id="app-resume" class="resume-box">Carregando...</div>
+
+      <h3>📥 Upload/Download de CV</h3>
+      <form id="app-cv-form" style="display:flex; gap:8px; margin-bottom:16px">
+        <input type="file" id="app-cv-file" accept=".pdf,.doc,.docx,.txt" />
+        <button type="submit">Fazer Upload</button>
+      </form>
+      <div id="app-cv-result"></div>
+      <div id="app-cv-link" style="margin-bottom:16px"></div>
+
+      <h3>🏷️ Tags e Classificação</h3>
+      <div id="app-tags-list" style="margin-bottom:12px">Nenhuma tag ainda</div>
+      <form id="app-tag-form" style="display:flex; gap:8px; margin-bottom:16px">
+        <input type="text" placeholder="Adicionar tag (coluna, tech stack, etc)" id="app-new-tag" />
+        <button type="button" id="app-add-tag-btn">Adicionar</button>
+      </form>
+
+      <h3>📅 Agendamento de Entrevista</h3>
+      <div id="app-interviews-list" style="margin-bottom:16px">Sem entrevistas agendadas</div>
+      <form id="app-interview-form">
+        <label>
+          Data e Hora
+          <input type="datetime-local" name="scheduled_at" required />
+        </label>
+        <label>
+          Tipo
+          <select name="type">
+            <option value="phone">☎️ Telefone</option>
+            <option value="video">📹 Vídeo</option>
+            <option value="in-person">👥 Presencial</option>
+          </select>
+        </label>
+        <label>
+          Notas
+          <textarea name="notes" placeholder="Instruções para a entrevista..."></textarea>
+        </label>
+        <button type="submit">🗓️ Agendar Entrevista</button>
+      </form>
+      <div id="app-interview-result"></div>
+
+      <h3>📝 Notas Internas do RH</h3>
+      <div id="app-notes-list" style="margin-bottom:16px">Sem notas</div>
+      <form id="app-note-form">
+        <label>
+          Sua Nota
+          <textarea name="content" placeholder="Feedback interno sobre este candidato..." required></textarea>
+        </label>
+        <button type="submit">💬 Adicionar Nota</button>
+      </form>
+      <div id="app-note-result"></div>
+    </section>
+  </main>
+
+  <footer>
+    <button id="seed-btn">🌱 Popular Demo (Seed)</button>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

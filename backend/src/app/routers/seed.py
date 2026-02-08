@@ -10,6 +10,11 @@ router = APIRouter()
 
 @router.post("/")
 def seed(db: Session = Depends(get_db)):
+    # Check if already seeded
+    existing_rh = db.query(User).filter(User.email == "rh@demo.com").first()
+    if existing_rh:
+        return {"status": "already_seeded"}
+    
     # user RH
     rh = User(name="RH Demo", email="rh@demo.com", role="RH")
     db.add(rh)
