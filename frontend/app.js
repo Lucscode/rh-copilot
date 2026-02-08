@@ -129,8 +129,8 @@ async function handleLogin(e) {
   console.log('[Login] Email:', email);
 
   try {
-    console.log('[Login] Enviando requisição para', `${apiBase}/auth/login/`);
-    const response = await fetch(`${apiBase}/auth/login/`, {
+    console.log('[Login] Enviando requisição para', `${apiBase}/auth/login`);
+    const response = await fetch(`${apiBase}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -166,7 +166,7 @@ async function handleRegister(e) {
   const result = document.getElementById('register-result');
 
   try {
-    const response = await fetch(`${apiBase}/auth/register/`, {
+    const response = await fetch(`${apiBase}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password, role })
