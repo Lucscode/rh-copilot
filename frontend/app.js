@@ -237,12 +237,17 @@ function updateUI() {
 }
 
 function showView(viewName) {
+  console.log('[showView] Tentando mostrar:', viewName);
   document.querySelectorAll('.view').forEach(view => {
     view.classList.remove('active');
   });
   const view = document.getElementById(viewName);
+  console.log('[showView] Elemento encontrado:', view);
   if (view) {
     view.classList.add('active');
+    console.log('[showView] Sucesso! View:', viewName, 'está agora active');
+  } else {
+    console.error('[showView] Erro! View não encontrada:', viewName);
   }
 }
 

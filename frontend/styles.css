@@ -222,6 +222,10 @@ body {
   display: none !important;
 }
 
+.hidden.view {
+  display: none !important;
+}
+
 /* ============================================
    TYPOGRAPHY
    ============================================ */
@@ -257,11 +261,15 @@ code {
    ============================================ */
 
 #auth-view {
-  display: flex !important;
+  display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   padding: var(--spacing-xl);
+}
+
+#auth-view.hidden {
+  display: none !important;
 }
 
 .auth-container {
