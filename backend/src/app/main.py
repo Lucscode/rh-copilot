@@ -44,12 +44,27 @@ app.include_router(seed.router, prefix="/api/seed", tags=["seed"])
 
 # Monta frontend estático (HTML/CSS/JS) DEPOIS dos routers
 # Isso garante que /api/* não seja interceptado pelo StaticFiles
-frontend_path = Path(__file__).resolve().parents[2] / "frontend"
+import os
 
-# Fallback para path absoluto se relativo não funcionar
-if not frontend_path.exists():
-    import os
-    frontend_path = Path(os.getcwd()) / "frontend"
+# Tenta múltiplos caminhos para compatibilidade local e Render
+possible_frontend_paths = [
+    Path(__file__).resolve().parents[2] / "frontend",  # Local: backend/src/app/main.py -> raiz
+    Path(os.getcwd()) / "frontend",                     # Render: cwd é backend, mas tentamos cwd/frontend
+    Path(os.getcwd()).parent / "frontend",              # Render: vai um nível acima de backend
+    Path("/opt/render/project/src/frontend"),           # Render: path absoluto comum
+]
 
-if frontend_path.exists():
+frontend_path = None
+for path in possible_frontend_paths:
+    if path.exists() and path.is_dir():
+        frontend_path = path
+        print(f"✅ Frontend encontrado em: {frontend_path}")
+        break
+
+if frontend_path:
     app.mount("/", StaticFiles(directory=str(frontend_path), html=True), name="frontend")
+else:
+    print(f"⚠️ Frontend não encontrado. Caminhos testados:")
+    for path in possible_frontend_paths:
+        print(f"   - {path} (exists: {path.exists()})")
+
