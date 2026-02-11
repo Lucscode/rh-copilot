@@ -2,7 +2,9 @@
 // RH COPILOT - Multi-Portal Navigation
 // ============================================
 
-const apiBase = '/api';
+// Detecta ambiente (local vs produção)
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const apiBase = isLocal ? '/api' : 'https://api.lamtech.org/api';
 
 // State Management
 let currentUser = null;

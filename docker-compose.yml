@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rh-copilot-postgres
+    environment:
+      POSTGRES_USER: rh
+      POSTGRES_PASSWORD: rh
+      POSTGRES_DB: rh_copilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - rh_copilot_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rh -d rh_copilot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  rh_copilot_pgdata:

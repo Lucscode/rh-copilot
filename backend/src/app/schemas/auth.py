@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_serializer
 from datetime import datetime
 from typing import Optional
 
@@ -21,6 +21,12 @@ class UserOut(BaseModel):
     email: str
     role: str
     created_at: datetime
+
+    @field_serializer('role')
+    def serialize_role(self, role, _info):
+        if hasattr(role, 'value'):
+            return role.value
+        return role
 
     class Config:
         from_attributes = True

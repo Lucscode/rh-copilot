@@ -1,0 +1,16 @@
+[Unit]
+Description=RH Copilot API
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/rh-copilot
+Environment="PATH=/opt/rh-copilot/backend/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+EnvironmentFile=/opt/rh-copilot/backend/.env
+ExecStart=/opt/rh-copilot/backend/.venv/bin/python -m uvicorn backend.src.app.main:app --host 127.0.0.1 --port 8000 --workers 2
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
