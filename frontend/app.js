@@ -1,42 +1,57 @@
 // ============================================
-// RH COPILOT - Multi-Portal Navigation
+// RH COPILOT - Sistema de Gestão de RH
 // ============================================
 
-// Detecta ambiente (local vs produção)
-const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const apiBase = isLocal ? '/api' : 'https://api.lamtech.org/api';
+// ============================================
+// CONFIGURAÇÃO E ESTADO
+// ============================================
 
-// State Management
+// Configuração da API - Supabase ou Backend Local
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+// Para usar Supabase, defina estas variáveis no Vercel:
+// VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY
+const SUPABASE_URL = window.ENV?.VITE_SUPABASE_URL || '';
+const SUPABASE_KEY = window.ENV?.VITE_SUPABASE_ANON_KEY || '';
+
+// Se Supabase estiver configurado, usa Supabase, senão usa backend local
+const USE_SUPABASE = SUPABASE_URL && SUPABASE_KEY;
+const API_BASE = USE_SUPABASE ? `${SUPABASE_URL}/rest/v1` : (isLocal ? '/api' : 'https://api.lamtech.org/api');
+
 let currentUser = null;
 let authToken = null;
 
-// Initialize app
+console.log('[Config] Modo:', USE_SUPABASE ? 'Supabase' : 'Backend Local');
+
+// ============================================
+// INICIALIZAÇÃO
+// ============================================
+
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('[RH Copilot] DOMContentLoaded - Inicializando...');
-  loadAuth();
-  setupEventListeners();
-  updateUI();
-  console.log('[RH Copilot] Inicializado com sucesso!');
+  console.log('[RH Copilot] Iniciando aplicação...');
+  loadAuthFromStorage();
+  setupAllEventListeners();
+  updateUIBasedOnAuth();
+  console.log('[RH Copilot] Aplicação iniciada com sucesso!');
 });
 
 // ============================================
-// AUTH MANAGEMENT
+// GERENCIAMENTO DE AUTENTICAÇÃO
 // ============================================
 
-function saveAuth(token, user) {
+function saveAuthToStorage(token, user) {
   authToken = token;
   currentUser = {
     id: user.id,
     name: user.name,
     email: user.email,
-    role: user.role,
-    created_at: user.created_at
+    role: user.role
   };
   localStorage.setItem('app_token', token);
   localStorage.setItem('app_user', JSON.stringify(currentUser));
 }
 
-function loadAuth() {
+function loadAuthFromStorage() {
   const token = localStorage.getItem('app_token');
   const user = localStorage.getItem('app_user');
   if (token && user) {
@@ -45,94 +60,106 @@ function loadAuth() {
   }
 }
 
-function logout() {
+function clearAuth() {
   authToken = null;
   currentUser = null;
   localStorage.removeItem('app_token');
   localStorage.removeItem('app_user');
-  updateUI();
+}
+
+function logout() {
+  clearAuth();
+  updateUIBasedOnAuth();
   showView('auth-view');
 }
 
 // ============================================
-// EVENT LISTENERS
+// CONFIGURAÇÃO DE EVENT LISTENERS
 // ============================================
 
-function setupEventListeners() {
-  console.log('[Setup] Configurando event listeners...');
-  
-  // Auth forms
+function setupAllEventListeners() {
+  setupAuthListeners();
+  setupNavigationListeners();
+  setupPasswordToggle();
+}
+
+function setupAuthListeners() {
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
-  
-  console.log('[Setup] Login form:', loginForm);
-  console.log('[Setup] Register form:', registerForm);
-  
-  if (loginForm) {
-    console.log('[Setup] Adicionando listener ao login form');
-    loginForm.addEventListener('submit', handleLogin);
-  }
-  if (registerForm) {
-    console.log('[Setup] Adicionando listener ao register form');
-    registerForm.addEventListener('submit', handleRegister);
-  }
+  const logoutBtn = document.getElementById('logout-btn');
 
-  // Tab switching
+  if (loginForm) loginForm.addEventListener('submit', handleLogin);
+  if (registerForm) registerForm.addEventListener('submit', handleRegister);
+  if (logoutBtn) logoutBtn.addEventListener('click', logout);
+
+  // Tabs de login/registro
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const tab = e.target.dataset.tab;
-      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-      document.getElementById(tab + '-form').classList.add('active');
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      e.target.classList.add('active');
+      switchAuthTab(tab);
     });
   });
+}
 
-  // Logout
-  const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) logoutBtn.addEventListener('click', logout);
-
-  // Navigation links
+function setupNavigationListeners() {
   document.querySelectorAll('[data-view]').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
-      const view = e.target.dataset.view;
-      showView(view);
+      const viewName = e.target.closest('[data-view]').dataset.view;
+      showView(viewName);
+      
+      // Atualiza navegação ativa
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-      e.target.classList.add('active');
+      e.target.closest('.nav-item')?.classList.add('active');
     });
   });
+}
 
-  // Seed button
-  const seedBtn = document.getElementById('seed-btn');
-  if (seedBtn) seedBtn.addEventListener('click', loadSeedData);
+function setupPasswordToggle() {
+  document.querySelectorAll('.toggle-password').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const wrapper = e.target.closest('.password-wrapper');
+      const input = wrapper?.querySelector('input');
+      if (!input) return;
 
-  // Candidate jobs search
-  const searchJobs = document.getElementById('search-jobs');
-  if (searchJobs) {
-    searchJobs.addEventListener('input', debounce((e) => {
-      loadCandidateJobs(e.target.value);
-    }, 300));
-  }
+      if (input.type === 'password') {
+        input.type = 'text';
+        e.target.textContent = 'Ocultar';
+      } else {
+        input.type = 'password';
+        e.target.textContent = 'Mostrar';
+      }
+    });
+  });
+}
+
+function switchAuthTab(tabName) {
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  
+  const targetForm = document.getElementById(`${tabName}-form`);
+  const targetTab = document.querySelector(`[data-tab="${tabName}"]`);
+  
+  if (targetForm) targetForm.classList.add('active');
+  if (targetTab) targetTab.classList.add('active');
 }
 
 // ============================================
-// AUTHENTICATION
+// HANDLERS DE AUTENTICAÇÃO
 // ============================================
 
 async function handleLogin(e) {
   e.preventDefault();
-  console.log('[Login] Tentando fazer login...');
+  console.log('[Login] Iniciando processo de login...');
   
   const email = e.target.email.value;
   const password = e.target.password.value;
-  const result = document.getElementById('login-result');
+  const resultDiv = document.getElementById('login-result');
 
   console.log('[Login] Email:', email);
 
   try {
-    console.log('[Login] Enviando requisição para', `${apiBase}/auth/login`);
-    const response = await fetch(`${apiBase}/auth/login`, {
+    const response = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -143,226 +170,355 @@ async function handleLogin(e) {
     console.log('[Login] Response data:', data);
     
     if (response.ok) {
-      console.log('[Login] Sucesso! Salvando auth...');
-      saveAuth(data.access_token, data.user);
-      updateUI();
-      showView('rh-metrics');
-      e.target.reset();
-      result.innerHTML = '';
+      console.log('[Login] Login bem-sucedido! Salvando autenticação...');
+      if (resultDiv) showSuccessMessage(resultDiv, 'Login realizado com sucesso!');
+      
+      // Aguarda um pouco para mostrar a mensagem de sucesso
+      setTimeout(() => {
+        saveAuthToStorage(data.access_token, data.user);
+        console.log('[Login] Autenticação salva. Atualizando UI...');
+        updateUIBasedOnAuth();
+        e.target.reset();
+        if (resultDiv) resultDiv.innerHTML = '';
+      }, 500);
     } else {
-      console.log('[Login] Erro:', data.detail);
-      result.innerHTML = `<div class="result-message error show">${data.detail || 'Erro ao fazer login'}</div>`;
+      console.error('[Login] Erro no login:', data.detail);
+      showErrorMessage(resultDiv, data.detail || 'Erro ao fazer login');
     }
   } catch (error) {
-    console.error('[Login] Erro:', error);
-    result.innerHTML = `<div class="result-message error show">Erro: ${error.message}</div>`;
+    console.error('[Login] Erro na requisição:', error);
+    showErrorMessage(resultDiv, `Erro: ${error.message}`);
   }
 }
 
 async function handleRegister(e) {
   e.preventDefault();
+  
   const name = e.target.name.value;
   const email = e.target.email.value;
   const password = e.target.password.value;
-  const role = e.target.role.value;
-  const result = document.getElementById('register-result');
+  const confirmPassword = e.target.confirm_password.value;
+  const resultDiv = document.getElementById('register-result');
+
+  // Validação de senha
+  if (password !== confirmPassword) {
+    showErrorMessage(resultDiv, 'As senhas não coincidem!');
+    return;
+  }
 
   try {
-    const response = await fetch(`${apiBase}/auth/register`, {
+    const response = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, role })
+      body: JSON.stringify({ name, email, password, role: 'funcionario' })
     });
 
     const data = await response.json();
+    
     if (response.ok) {
-      saveAuth(data.access_token, data.user);
-      updateUI();
-      showView('rh-metrics');
-      e.target.reset();
-      result.innerHTML = '';
+      if (resultDiv) showSuccessMessage(resultDiv, 'Cadastro realizado com sucesso!');
+      
+      setTimeout(() => {
+        saveAuthToStorage(data.access_token, data.user);
+        updateUIBasedOnAuth();
+        e.target.reset();
+        if (resultDiv) resultDiv.innerHTML = '';
+      }, 500);
     } else {
-      result.innerHTML = `<div class="result-message error show">${data.detail || 'Erro no registro'}</div>`;
+      showErrorMessage(resultDiv, data.detail || 'Erro no registro');
     }
   } catch (error) {
-    result.innerHTML = `<div class="result-message error show">Erro: ${error.message}</div>`;
+    showErrorMessage(resultDiv, `Erro: ${error.message}`);
   }
 }
 
-// ============================================
-// UI UPDATES
-// ============================================
+function showErrorMessage(element, message) {
+  if (element) {
+    element.innerHTML = `<div style="color: #ff4444; padding: 12px 16px; background: #ffe5e5; border-left: 4px solid #ff4444; border-radius: 8px; margin: 15px 0; font-weight: 500; box-shadow: 0 2px 4px rgba(255,68,68,0.1);">⚠️ ${message}</div>`;
+    // Remove a mensagem após 5 segundos
+    setTimeout(() => {
+      if (element) element.innerHTML = '';
+    }, 5000);
+  }
+}
 
-function updateUI() {
+function showSuccessMessage(element, message) {
+  if (element) {
+    element.innerHTML = `<div style="color: #00aa00; padding: 12px 16px; background: #e5ffe5; border-left: 4px solid #00aa00; border-radius: 8px; margin: 15px 0; font-weight: 500; box-shadow: 0 2px 4px rgba(0,170,0,0.1);">✓ ${message}</div>`;
+    // Remove a mensagem após 3 segundos
+    setTimeout(() => {
+      if (element) element.innerHTML = '';
+    }, 3000);
+  }
+}
+
+// ================================
+// 3. UI Update and Navigation
+// ================================
+
+function updateUIBasedOnAuth() {
+  console.log('[UI] Atualizando UI baseado em autenticação...');
+  console.log('[UI] Current User:', currentUser);
+  console.log('[UI] Auth Token:', authToken ? 'presente' : 'ausente');
+
   const header = document.getElementById('main-header');
   const sidebar = document.getElementById('sidebar');
   const userInfo = document.getElementById('user-info');
   const authView = document.getElementById('auth-view');
 
-  if (currentUser) {
-    // User logged in
-    header.classList.remove('hidden');
-    sidebar.classList.remove('hidden');
-    userInfo.classList.remove('hidden');
-    authView.classList.add('hidden');
+  if (currentUser && authToken) {
+    console.log('[UI] Usuário autenticado, mostrando interface...');
+    // Usuário logado
+    header?.classList.remove('hidden');
+    sidebar?.classList.remove('hidden');
+    userInfo?.classList.remove('hidden');
+    authView?.classList.add('hidden');
 
-    document.getElementById('user-display').textContent = 
-      `${currentUser.name} (${currentUser.role.toUpperCase()})`;
-
-    // Show relevant navigation sections
-    document.querySelectorAll('.nav-section').forEach(s => s.classList.add('hidden'));
-    
-    const role = currentUser.role;
-    if (role === 'candidato') {
-      document.getElementById('nav-candidato').classList.remove('hidden');
-      showView('candidate-jobs');
-    } else if (role === 'rh') {
-      document.getElementById('nav-rh').classList.remove('hidden');
-      showView('rh-metrics');
-      loadMetrics();
-    } else if (role === 'funcionario') {
-      document.getElementById('nav-funcionario').classList.remove('hidden');
-      showView('employee-chat');
-    } else if (role === 'admin') {
-      document.getElementById('nav-admin').classList.remove('hidden');
-      showView('admin-dashboard');
-      loadAdminDashboard();
+    const userDisplay = document.getElementById('user-display');
+    if (userDisplay) {
+      userDisplay.textContent = `${currentUser.name} (${currentUser.role.toUpperCase()})`;
     }
+
+    console.log('[UI] Mostrando navegação para role:', currentUser.role);
+    showNavigationForRole(currentUser.role);
   } else {
-    // User not logged in
-    header.classList.add('hidden');
-    sidebar.classList.add('hidden');
-    userInfo.classList.add('hidden');
-    authView.classList.remove('hidden');
+    console.log('[UI] Usuário não autenticado, mostrando tela de login...');
+    // Usuário não logado
+    header?.classList.add('hidden');
+    sidebar?.classList.add('hidden');
+    userInfo?.classList.add('hidden');
+    authView?.classList.remove('hidden');
     showView('auth-view');
   }
 }
 
-function showView(viewName) {
-  console.log('[showView] Tentando mostrar:', viewName);
-  document.querySelectorAll('.view').forEach(view => {
-    view.classList.remove('active');
-  });
-  const view = document.getElementById(viewName);
-  console.log('[showView] Elemento encontrado:', view);
-  if (view) {
-    view.classList.add('active');
-    console.log('[showView] Sucesso! View:', viewName, 'está agora active');
+function showNavigationForRole(role) {
+  console.log('[Navigation] Configurando navegação para role:', role);
+  
+  // Esconde todas as navegações
+  document.querySelectorAll('.nav-section').forEach(section => section.classList.add('hidden'));
+
+  // Mostra navegação apropriada e view inicial
+  if (role === 'rh') {
+    console.log('[Navigation] Mostrando painel RH...');
+    document.getElementById('nav-rh')?.classList.remove('hidden');
+    showView('rh-dashboard');
+    loadRHDashboard();
+  } else if (role === 'funcionario') {
+    console.log('[Navigation] Mostrando painel Funcionário...');
+    const navFuncionario = document.getElementById('nav-funcionario');
+    console.log('[Navigation] nav-funcionario encontrado:', navFuncionario);
+    navFuncionario?.classList.remove('hidden');
+    showView('employee-dashboard');
+    loadEmployeeDashboard();
+  } else if (role === 'admin') {
+    console.log('[Navigation] Mostrando painel Admin...');
+    document.getElementById('nav-admin')?.classList.remove('hidden');
+    showView('admin-dashboard');
   } else {
-    console.error('[showView] Erro! View não encontrada:', viewName);
+    console.log('[Navigation] Role desconhecido, usando painel RH como default...');
+    // Default: RH
+    document.getElementById('nav-rh')?.classList.remove('hidden');
+    showView('rh-dashboard');
+  }
+}
+
+function showView(viewName) {
+  console.log('[showView] Mostrando view:', viewName);
+  
+  // Remove active de todas as views
+  document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+  
+  // Ativa a view solicitada
+  const targetView = document.getElementById(viewName);
+  if (targetView) {
+    targetView.classList.add('active');
+    loadViewData(viewName);
+  } else {
+    console.error('[showView] View não encontrada:', viewName);
+  }
+}
+
+function loadViewData(viewName) {
+  // Carrega dados específicos para cada view
+  switch(viewName) {
+    case 'rh-dashboard':
+      loadRHDashboard();
+      break;
+    case 'rh-metrics':
+      loadRHMetrics();
+      break;
+    case 'employee-dashboard':
+      loadEmployeeDashboard();
+      break;
+    case 'employee-profile':
+      loadEmployeeProfile();
+      break;
+    case 'employee-timesheet':
+      loadEmployeeTimesheet();
+      break;
+    case 'employee-goals':
+      loadEmployeeGoals();
+      break;
+    case 'employee-documents':
+      loadEmployeeDocuments();
+      break;
   }
 }
 
 // ============================================
-// CANDIDATE PORTAL
+// FUNÇÕES DE CARREGAMENTO DE DADOS - RH
 // ============================================
 
-async function loadCandidateJobs(search = '') {
+async function loadRHDashboard() {
+  console.log('[RH] Carregando dashboard...');
   try {
-    const url = search 
-      ? `${apiBase}/jobs/?search=${encodeURIComponent(search)}`
-      : `${apiBase}/jobs/`;
-    
-    const response = await fetch(url, {
+    const response = await fetch(`${API_BASE}/metrics/dashboard`, {
       headers: { 'Authorization': `Bearer ${authToken}` }
     });
-    const jobs = await response.json();
     
-    const list = document.getElementById('jobs-list');
-    if (jobs.length === 0) {
-      list.innerHTML = '<p class="muted">Nenhuma vaga encontrada</p>';
-      return;
+    if (response.ok) {
+      const data = await response.json();
+      updateRHDashboard(data);
     }
-
-    list.innerHTML = jobs.map(job => `
-      <div class="job-item" onclick="viewJobDetail('${job.id}')">
-        <strong>${job.title}</strong>
-        <p class="muted">${job.short_description || job.description?.substring(0, 100)}</p>
-      </div>
-    `).join('');
   } catch (error) {
-    console.error('Erro ao carregar vagas:', error);
+    console.error('[RH] Erro ao carregar dashboard:', error);
   }
 }
 
-// ============================================
-// RH PORTAL
-// ============================================
+function updateRHDashboard(data) {
+  const elements = {
+    'dash-total-employees': data.total_employees || 0,
+    'dash-total-teams': data.total_teams || 0,
+    'dash-pending-os': data.pending_os || 0,
+    'dash-messages-today': data.messages_today || 0
+  };
 
-async function loadMetrics() {
+  Object.entries(elements).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+  });
+}
+
+async function loadRHMetrics() {
+  console.log('[RH] Carregando métricas...');
   try {
-    const response = await fetch(`${apiBase}/metrics/`, {
+    const response = await fetch(`${API_BASE}/metrics/`, {
       headers: { 'Authorization': `Bearer ${authToken}` }
     });
-    const data = await response.json();
-
-    document.getElementById('metric-jobs').textContent = data.total_jobs || 0;
-    document.getElementById('metric-candidates').textContent = data.total_candidates || 0;
-    document.getElementById('metric-applications').textContent = data.total_applications || 0;
-    document.getElementById('metric-avg-score').textContent = 
-      (data.avg_match_score || 0).toFixed(0) + '%';
-
-    // Status chart
-    const chart = document.getElementById('status-chart');
-    if (data.applications_by_status) {
-      chart.innerHTML = Object.entries(data.applications_by_status)
-        .map(([status, count]) => `
-          <div style="margin: 8px 0; padding: 8px; background: var(--bg-dark); border-radius: 4px;">
-            <strong>${status.replace(/_/g, ' ')}</strong>: ${count}
-          </div>
-        `).join('');
+    
+    if (response.ok) {
+      const data = await response.json();
+      updateRHMetrics(data);
     }
   } catch (error) {
-    console.error('Erro ao carregar métricas:', error);
+    console.error('[RH] Erro ao carregar métricas:', error);
   }
 }
 
+function updateRHMetrics(data) {
+  const metrics = {
+    'metric-employees': data.total_employees || 0,
+    'metric-teams': data.total_teams || 0,
+    'metric-os-pending': data.pending_os || 0,
+    'metric-requests': data.total_requests || 0
+  };
+
+  Object.entries(metrics).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+  });
+}
+
 // ============================================
-// ADMIN PORTAL
+// FUNÇÕES DE CARREGAMENTO DE DADOS - FUNCIONÁRIO
+// ============================================
+
+async function loadEmployeeDashboard() {
+  console.log('[Funcionário] Carregando dashboard...');
+  try {
+    const response = await fetch(`${API_BASE}/employees/me/dashboard`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      updateEmployeeDashboard(data);
+    }
+  } catch (error) {
+    console.error('[Funcionário] Erro ao carregar dashboard:', error);
+    showPlaceholderData('employee');
+  }
+}
+
+function updateEmployeeDashboard(data) {
+  const welcomeMsg = document.querySelector('.employee-welcome-card h2');
+  if (welcomeMsg && currentUser) {
+    welcomeMsg.textContent = `Bem-vindo, ${currentUser.name.split(' ')[0]}! 👋`;
+  }
+}
+
+async function loadEmployeeProfile() {
+  console.log('[Funcionário] Carregando perfil...');
+  try {
+    const response = await fetch(`${API_BASE}/employees/me/profile`, {
+      headers: { 'Authorization': `Bearer ${authToken}` }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      updateEmployeeProfile(data);
+    }
+  } catch (error) {
+    console.error('[Funcionário] Erro ao carregar perfil:', error);
+  }
+}
+
+function updateEmployeeProfile(data) {
+  // Atualizar campos do perfil quando o endpoint estiver implementado
+  console.log('[Funcionário] Dados do perfil:', data);
+}
+
+async function loadEmployeeTimesheet() {
+  console.log('[Funcionário] Carregando registro de ponto...');
+  updateCurrentTime();
+  setInterval(updateCurrentTime, 1000);
+}
+
+function updateCurrentTime() {
+  const timeElement = document.querySelector('.current-time');
+  if (timeElement) {
+    const now = new Date();
+    timeElement.textContent = now.toLocaleTimeString('pt-BR');
+  }
+}
+
+async function loadEmployeeGoals() {
+  console.log('[Funcionário] Carregando metas...');
+  // Implementar quando o endpoint estiver pronto
+}
+
+async function loadEmployeeDocuments() {
+  console.log('[Funcionário] Carregando documentos...');
+  // Implementar quando o endpoint estiver pronto
+}
+
+function showPlaceholderData(type) {
+  console.log(`[${type}] Mostrando dados de exemplo`);
+  // Dados de exemplo para desenvolvimento
+}
+
+// ============================================
+// FUNÇÕES DE ADMIN
 // ============================================
 
 async function loadAdminDashboard() {
-  try {
-    // Esta seção será expandida com endpoints de admin específicos
-    document.getElementById('admin-status').textContent = '✅ Online';
-  } catch (error) {
-    console.error('Erro ao carregar dashboard admin:', error);
-  }
+  console.log('[Admin] Carregando dashboard administrativo...');
+  // Implementar quando necessário
 }
 
 // ============================================
-// SEED DATA
-// ============================================
-
-async function loadSeedData() {
-  try {
-    const btn = document.getElementById('seed-btn');
-    btn.disabled = true;
-    btn.textContent = 'Carregando...';
-
-    const response = await fetch(`${apiBase}/seed/`, {
-      method: 'POST'
-    });
-
-    if (response.ok) {
-      alert('Dados demo carregados com sucesso!');
-      if (currentUser && currentUser.role === 'rh') {
-        loadMetrics();
-      }
-    } else {
-      alert('Erro ao carregar dados demo');
-    }
-  } catch (error) {
-    alert('Erro: ' + error.message);
-  } finally {
-    const btn = document.getElementById('seed-btn');
-    btn.disabled = false;
-    btn.textContent = 'Carregar Dados Demo';
-  }
-}
-
-// ============================================
-// UTILITIES
+// UTILITÁRIOS
 // ============================================
 
 function debounce(fn, delay) {
@@ -373,5 +529,22 @@ function debounce(fn, delay) {
   };
 }
 
-// Initialize on load
-console.log('[RH Platform] Inicializado com sucesso');
+function formatDate(dateString) {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('pt-BR');
+}
+
+function formatCurrency(value) {
+  if (value === null || value === undefined) return 'R$ 0,00';
+  return new Intl.NumberFormat('pt-BR', { 
+    style: 'currency', 
+    currency: 'BRL' 
+  }).format(value);
+}
+
+// ============================================
+// INICIALIZAÇÃO FINAL
+// ============================================
+
+console.log('[RH Copilot] Módulo carregado com sucesso');

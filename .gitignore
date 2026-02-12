@@ -3,10 +3,14 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.env
+.env
+*.env.*
 
 # Database
 *.db
 dev.db
+*.sqlite
+*.sqlite3
 
 # File uploads
 cv_storage/
@@ -21,3 +25,16 @@ uploads/
 build/
 dist/
 *.egg-info/
+
+# Backups
+*.backup
+*.bak
+*.old
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

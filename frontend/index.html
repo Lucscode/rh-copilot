@@ -25,26 +25,30 @@
     <!-- Sidebar de Navegação -->
     <aside id="sidebar" class="sidebar hidden">
       <nav class="sidebar-nav">
-        <div id="nav-candidato" class="nav-section hidden">
-          <h3>Candidato</h3>
-          <a href="#" data-view="candidate-jobs" class="nav-item">📋 Vagas Disponíveis</a>
-          <a href="#" data-view="candidate-applications" class="nav-item">💼 Minhas Inscrições</a>
-          <a href="#" data-view="candidate-cv" class="nav-item">📄 Meu Currículo</a>
-        </div>
-
         <div id="nav-rh" class="nav-section hidden">
-          <h3>RH & Recrutamento</h3>
-          <a href="#" data-view="rh-metrics" class="nav-item">📊 Métricas & Analytics</a>
-          <a href="#" data-view="rh-jobs" class="nav-item">💼 Gerenciar Vagas</a>
-          <a href="#" data-view="rh-applications" class="nav-item">📥 Candidaturas</a>
+          <h3>📊 Gestão & Analytics</h3>
+          <a href="#" data-view="rh-dashboard" class="nav-item">📈 Dashboard Gerencial</a>
+          <a href="#" data-view="rh-metrics" class="nav-item">📊 Métricas</a>
+          
+          <h3>👥 Gestão de Pessoas</h3>
+          <a href="#" data-view="rh-employees" class="nav-item">👤 Funcionários</a>
+          <a href="#" data-view="rh-teams" class="nav-item">👨‍👩‍👧‍👦 Equipes</a>
+          
+          <h3>🔧 Operações</h3>
+          <a href="#" data-view="rh-service-orders" class="nav-item">🛠️ Ordens de Serviço</a>
+          <a href="#" data-view="rh-feed" class="nav-item">🔔 Feed de Atividades</a>
           <a href="#" data-view="rh-documents" class="nav-item">📁 Documentos IA</a>
-          <a href="#" data-view="rh-feed" class="nav-item">🔄 Feed de Atividades</a>
         </div>
 
         <div id="nav-funcionario" class="nav-section hidden">
-          <h3>RH Chat</h3>
-          <a href="#" data-view="employee-chat" class="nav-item">💬 Chat com RH</a>
+          <h3>🏠 Meu Espaço</h3>
+          <a href="#" data-view="employee-dashboard" class="nav-item">📊 Dashboard</a>
           <a href="#" data-view="employee-profile" class="nav-item">👤 Meu Perfil</a>
+          <a href="#" data-view="employee-requests" class="nav-item">📝 Solicitações</a>
+          <a href="#" data-view="employee-timesheet" class="nav-item">⏰ Registro de Ponto</a>
+          <a href="#" data-view="employee-goals" class="nav-item">🎯 Metas & Desempenho</a>
+          <a href="#" data-view="employee-documents" class="nav-item">📁 Meus Documentos</a>
+          <a href="#" data-view="employee-chat" class="nav-item">🤖 Chat com IA</a>
         </div>
 
         <div id="nav-admin" class="nav-section hidden">
@@ -77,16 +81,19 @@
               Email
               <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
             </label>
-            <label>
+            <label class="password-field">
               Senha
-              <input type="password" name="password" placeholder="Sua senha" required />
+              <div class="password-wrapper">
+                <input type="password" name="password" placeholder="Sua senha" required />
+                <button type="button" class="toggle-password" title="Mostrar/Ocultar senha">Mostrar</button>
+              </div>
             </label>
             <button type="submit" class="btn-primary">Entrar</button>
             <div id="login-result" class="result-message"></div>
           </form>
 
           <!-- Register Form -->
-          <form id="register-form" class="auth-form hidden">
+          <form id="register-form" class="auth-form">
             <label>
               Nome Completo
               <input type="text" name="name" placeholder="Seu nome" required />
@@ -95,133 +102,117 @@
               Email
               <input type="email" name="email" placeholder="seu.email@exemplo.com" required />
             </label>
-            <label>
+            <label class="password-field">
               Senha
-              <input type="password" name="password" placeholder="Min. 6 caracteres" required minlength="6" />
+              <div class="password-wrapper">
+                <input type="password" name="password" placeholder="Min. 6 caracteres" required minlength="6" />
+                <button type="button" class="toggle-password" title="Mostrar/Ocultar senha">Mostrar</button>
+              </div>
             </label>
-            <label>
-              Tipo de Conta
-              <select name="role" required>
-                <option value="">Selecione...</option>
-                <option value="candidato">Candidato</option>
-                <option value="funcionario">Funcionário</option>
-                <option value="rh">RH/Recrutador</option>
-                <option value="admin">Administrador</option>
-              </select>
+            <label class="password-field">
+              Confirmar Senha
+              <div class="password-wrapper">
+                <input type="password" name="confirm_password" placeholder="Digite a senha novamente" required minlength="6" />
+                <button type="button" class="toggle-password" title="Mostrar/Ocultar senha">Mostrar</button>
+              </div>
             </label>
-            <button type="submit" class="btn-primary">Registrar</button>
+            <button type="submit" class="btn-primary">Criar Conta</button>
             <div id="register-result" class="result-message"></div>
           </form>
 
           <div class="demo-info">
-            <p><strong>Demo:</strong> Email: <code>rh@demo.com</code> | Senha: <code>password</code></p>
-            <button id="seed-btn" class="btn-secondary" type="button">Carregar Dados Demo</button>
+            <p><strong>🎯 Acesso Demo:</strong></p>
+            <p>Email: <code>rh@demo.com</code> | Senha: <code>password</code></p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 2. CANDIDATE PORTAL -->
-    <section id="candidate-jobs" class="view">
-      <h2>Vagas Disponíveis</h2>
-      <div class="search-bar">
-        <input type="text" id="search-jobs" placeholder="Buscar vagas..." />
+    <!-- ========================================== -->
+    <!-- PAINEL RH -->
+    <!-- ========================================== -->
+    
+    <!-- Dashboard Gerencial RH -->
+    <section id="rh-dashboard" class="view">
+      <h2>📊 Dashboard Gerencial</h2>
+      
+      <div class="dashboard-grid">
+        <!-- Visão Geral -->
+        <div class="dashboard-card">
+          <h3>📈 Visão Geral</h3>
+          <div class="metric-row">
+            <span>Total de Funcionários:</span>
+            <strong id="dash-total-employees">0</strong>
+          </div>
+          <div class="metric-row">
+            <span>Equipes Ativas:</span>
+            <strong id="dash-total-teams">0</strong>
+          </div>
+          <div class="metric-row">
+            <span>OS Pendentes:</span>
+            <strong id="dash-pending-os">0</strong>
+          </div>
+          <div class="metric-row">
+            <span>Mensagens Hoje:</span>
+            <strong id="dash-messages-today">0</strong>
+          </div>
+        </div>
+
+        <!-- Por Departamento -->
+        <div class="dashboard-card">
+          <h3>👥 Por Departamento</h3>
+          <div id="dept-chart" class="chart">
+            <p class="muted">Carregando dados...</p>
+          </div>
+        </div>
+
+        <!-- Aniversariantes -->
+        <div class="dashboard-card">
+          <h3>📅 Aniversariantes do Mês</h3>
+          <div id="birthdays-list" class="birthdays-list">
+            <p class="muted">Nenhum aniversariante este mês</p>
+          </div>
+        </div>
+
+        <!-- Ações Pendentes -->
+        <div class="dashboard-card">
+          <h3>⚠️ Ações Pendentes</h3>
+          <div id="pending-actions" class="actions-list">
+            <p class="muted">Nenhuma ação pendente</p>
+          </div>
+        </div>
+
+        <!-- OS Timeline -->
+        <div class="dashboard-card full-width">
+          <h3>📊 OS por Status (Últimos 30 dias)</h3>
+          <div id="os-timeline-chart" class="chart">
+            <p class="muted">Carregando gráfico...</p>
+          </div>
+        </div>
       </div>
-      <div id="jobs-list" class="jobs-grid"></div>
     </section>
 
-    <section id="candidate-applications" class="view">
-      <h2>Minhas Inscrições</h2>
-      <div id="my-applications" class="applications-list"></div>
-    </section>
-
-    <section id="candidate-cv" class="view">
-      <h2>Meu Currículo</h2>
-      <form id="cv-form" class="form-container">
-        <label>
-          Fazer Upload do CV (PDF/DOC)
-          <input type="file" name="cv" accept=".pdf,.doc,.docx" />
-        </label>
-        <label>
-          Resumo Profissional
-          <textarea name="summary" placeholder="Fale sobre sua experiência..."></textarea>
-        </label>
-        <button type="submit" class="btn-primary">Atualizar CV</button>
-      </form>
-    </section>
-
-    <!-- 3. RH PORTAL -->
+    <!-- Métricas RH -->
     <section id="rh-metrics" class="view">
-      <h2>Painel de Métricas</h2>
+      <h2>Painel de Métricas de RH</h2>
       <div class="metrics-grid">
         <div class="metric-card">
-          <h3>Vagas Ativas</h3>
-          <div class="metric-value" id="metric-jobs">-</div>
+          <h3>Funcionários Ativos</h3>
+          <div class="metric-value" id="metric-employees">-</div>
         </div>
         <div class="metric-card">
-          <h3>Candidatos</h3>
-          <div class="metric-value" id="metric-candidates">-</div>
+          <h3>Equipes</h3>
+          <div class="metric-value" id="metric-teams">-</div>
         </div>
         <div class="metric-card">
-          <h3>Candidaturas</h3>
-          <div class="metric-value" id="metric-applications">-</div>
+          <h3>OS Pendentes</h3>
+          <div class="metric-value" id="metric-os-pending">-</div>
         </div>
         <div class="metric-card">
-          <h3>Match Médio</h3>
-          <div class="metric-value" id="metric-avg-score">-%</div>
+          <h3>Solicitações</h3>
+          <div class="metric-value" id="metric-requests">-</div>
         </div>
       </div>
-      <div class="chart-container">
-        <h3>Candidaturas por Status</h3>
-        <div id="status-chart" class="status-chart"></div>
-      </div>
-    </section>
-
-    <section id="rh-jobs" class="view">
-      <h2>Gerenciar Vagas</h2>
-      <button class="btn-primary btn-large" id="create-job-btn">➕ Criar Nova Vaga</button>
-      
-      <div id="create-job-form" class="form-container hidden">
-        <form id="job-form">
-          <label>
-            Título da Vaga
-            <input type="text" name="title" placeholder="Ex: Desenvolvedor Python Senior" required />
-          </label>
-          <label>
-            Descrição
-            <textarea name="description" placeholder="Descreva a vaga..." required></textarea>
-          </label>
-          <label>
-            Requisitos
-            <textarea name="requirements" placeholder="Liste os requisitos..." required></textarea>
-          </label>
-          <label>
-            Salário (Opcional)
-            <input type="text" name="salary" placeholder="Ex: R$ 5.000 - R$ 8.000" />
-          </label>
-          <div class="form-actions">
-            <button type="submit" class="btn-primary">Publicar Vaga</button>
-            <button type="button" class="btn-secondary" id="cancel-job-btn">Cancelar</button>
-          </div>
-        </form>
-      </div>
-
-      <div id="rh-jobs-list" class="jobs-grid"></div>
-    </section>
-
-    <section id="rh-applications" class="view">
-      <h2>Candidaturas Recebidas</h2>
-      <div class="filter-bar">
-        <select id="status-filter">
-          <option value="">Todos os Status</option>
-          <option value="aplicado">Aplicado</option>
-          <option value="em_analise">Em Análise</option>
-          <option value="entrevista">Entrevista</option>
-          <option value="oferecido">Oferecido</option>
-          <option value="rejeitado">Rejeitado</option>
-        </select>
-      </div>
-      <div id="rh-applications-list" class="applications-list"></div>
     </section>
 
     <section id="rh-documents" class="view">
@@ -254,23 +245,313 @@
       <div id="activities-feed" class="activities-list"></div>
     </section>
 
-    <!-- 4. EMPLOYEE (FUNCIONARIO) PORTAL -->
-    <section id="employee-chat" class="view">
-      <h2>Chat com RH - Bot Assistente</h2>
-      <div class="chat-container">
-        <div id="chat-messages" class="chat-messages"></div>
-        <form id="chat-form" class="chat-input">
-          <input type="text" id="chat-input" placeholder="Faça sua pergunta..." required />
-          <button type="submit" class="btn-primary">Enviar</button>
-        </form>
+    <!-- GESTÃO INTERNA DE RH -->
+    <section id="rh-employees" class="view">
+      <h2>👥 Gestão de Funcionários</h2>
+      
+      <div class="actions-bar">
+        <button class="btn-primary" onclick="showAddEmployeeModal()">➕ Adicionar Funcionário</button>
+        <input type="text" id="search-employees" placeholder="🔍 Buscar funcionário..." class="search-input" />
+        <select id="department-filter" class="filter-select">
+          <option value="">Todos os Departamentos</option>
+          <option value="TI">TI</option>
+          <option value="RH">RH</option>
+          <option value="Financeiro">Financeiro</option>
+          <option value="Comercial">Comercial</option>
+          <option value="Operações">Operações</option>
+        </select>
+      </div>
+
+      <div id="employees-list" class="employees-grid"></div>
+    </section>
+
+    <section id="rh-teams" class="view">
+      <h2>👨‍👩‍👧‍👦 Gestão de Equipes</h2>
+      
+      <div class="actions-bar">
+        <button class="btn-primary" onclick="showCreateTeamModal()">➕ Criar Nova Equipe</button>
+      </div>
+
+      <div id="teams-list" class="teams-grid">
+        <!-- Teams will be loaded here -->
       </div>
     </section>
 
+    <section id="rh-service-orders" class="view">
+      <h2>🔧 Ordens de Serviço (OS)</h2>
+      
+      <div class="os-stats">
+        <div class="stat-card">
+          <h3>Abertas</h3>
+          <div class="stat-value" id="os-open">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Em Andamento</h3>
+          <div class="stat-value" id="os-progress">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Concluídas</h3>
+          <div class="stat-value" id="os-closed">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Total</h3>
+          <div class="stat-value" id="os-total">0</div>
+        </div>
+      </div>
+
+      <div class="actions-bar">
+        <button class="btn-primary" onclick="showCreateOSModal()">➕ Nova OS</button>
+        <select id="os-status-filter" class="filter-select" onchange="filterOS()">
+          <option value="">Todos os Status</option>
+          <option value="aberta">Aberta</option>
+          <option value="em_andamento">Em Andamento</option>
+          <option value="concluida">Concluída</option>
+          <option value="cancelada">Cancelada</option>
+        </select>
+        <select id="os-category-filter" class="filter-select" onchange="filterOS()">
+          <option value="">Todas as Categorias</option>
+          <option value="TI">TI / Informática</option>
+          <option value="Facilities">Facilities</option>
+          <option value="RH">RH</option>
+          <option value="Financeiro">Financeiro</option>
+          <option value="Outros">Outros</option>
+        </select>
+      </div>
+
+      <div id="os-list" class="os-grid"></div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- PAINEL FUNCIONÁRIO -->
+    <!-- ========================================== -->
+
+    
+    <!-- Dashboard do Funcionário -->
+    <section id="employee-dashboard" class="view">
+      <h2>🏠 Meu Dashboard</h2>
+      
+      <div class="employee-welcome-card">
+        <div class="employee-photo-section">
+          <div class="employee-photo-large">👤</div>
+          <div class="employee-welcome-info">
+            <h3 id="emp-dash-name">Bem-vindo(a)!</h3>
+            <p id="emp-dash-role" class="text-muted">Cargo</p>
+            <p id="emp-dash-department" class="text-muted">Departamento</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <h3>⏰ Horas Trabalhadas</h3>
+          <div class="metric-value" id="emp-hours-month">0h</div>
+          <p class="text-muted">Este mês</p>
+        </div>
+        <div class="dashboard-card">
+          <h3>🏖️ Férias Disponíveis</h3>
+          <div class="metric-value" id="emp-vacation-days">0</div>
+          <p class="text-muted">Dias disponíveis</p>
+        </div>
+        <div class="dashboard-card">
+          <h3>📝 Solicitações</h3>
+          <div class="metric-value" id="emp-pending-requests">0</div>
+          <p class="text-muted">Pendentes</p>
+        </div>
+        <div class="dashboard-card">
+          <h3>🎯 Metas do Mês</h3>
+          <div class="metric-value" id="emp-goals-progress">0%</div>
+          <p class="text-muted">Progresso</p>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="dashboard-card full-width">
+          <h3>📅 Últimos Registros de Ponto</h3>
+          <div id="emp-recent-timesheets" class="recent-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Perfil do Funcionário -->
     <section id="employee-profile" class="view">
-      <h2>Meu Perfil</h2>
-      <div class="profile-container">
-        <h3>Informações Pessoais</h3>
-        <div id="profile-info" class="info-card"></div>
+      <h2>👤 Meu Perfil</h2>
+      
+      <div class="profile-grid">
+        <div class="profile-card">
+          <h3>📋 Informações Pessoais</h3>
+          <div class="profile-info">
+            <div class="info-row">
+              <span>Nome Completo:</span>
+              <strong id="prof-name">-</strong>
+            </div>
+            <div class="info-row">
+              <span>Email:</span>
+              <strong id="prof-email">-</strong>
+            </div>
+            <div class="info-row">
+              <span>Telefone:</span>
+              <strong id="prof-phone">-</strong>
+            </div>
+            <div class="info-row">
+              <span>CPF:</span>
+              <strong id="prof-cpf">-</strong>
+            </div>
+            <div class="info-row">
+              <span>Data de Nascimento:</span>
+              <strong id="prof-birthday">-</strong>
+            </div>
+          </div>
+          <button class="btn-primary" onclick="editPersonalInfo()">✏️ Editar Informações</button>
+        </div>
+
+        <div class="profile-card">
+          <h3>💼 Informações Profissionais</h3>
+          <div class="profile-info">
+            <div class="info-row">
+              <span>Cargo:</span>
+              <strong id="prof-position">-</strong>
+            </div>
+            <div class="info-row">
+              <span>Departamento:</span>
+              <strong id="prof-dept">-</strong>
+            </div>
+            <div class="info-row">
+              <span>Data de Admissão:</span>
+              <strong id="prof-admission">-</strong>
+            </div>
+            <div class="info-row">
+              <span>Tipo de Contrato:</span>
+              <strong id="prof-contract">-</strong>
+            </div>
+            <div class="info-row">
+              <span>Gestor Direto:</span>
+              <strong id="prof-manager">-</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Solicitações -->
+    <section id="employee-requests" class="view">
+      <h2>📝 Minhas Solicitações</h2>
+      
+      <div class="actions-bar">
+        <button class="btn-primary" onclick="showNewRequestModal()">➕ Nova Solicitação</button>
+        <select id="request-status-filter" class="filter-select" onchange="filterRequests()">
+          <option value="">Todos os Status</option>
+          <option value="pendente">Pendente</option>
+          <option value="aprovado">Aprovado</option>
+          <option value="rejeitado">Rejeitado</option>
+        </select>
+      </div>
+
+      <div id="requests-list" class="requests-grid"></div>
+    </section>
+
+    <!-- Registro de Ponto -->
+    <section id="employee-timesheet" class="view">
+      <h2>⏰ Registro de Ponto</h2>
+      
+      <div class="timesheet-actions">
+        <div class="clock-card">
+          <h3>Registrar Ponto Agora</h3>
+          <div class="current-time" id="current-time">00:00:00</div>
+          <div class="timesheet-buttons">
+            <button class="btn-primary btn-large" onclick="clockIn()">🟢 Entrada</button>
+            <button class="btn-secondary btn-large" onclick="clockOut()">🔴 Saída</button>
+          </div>
+          <div id="last-clock" class="text-muted"></div>
+        </div>
+      </div>
+
+      <div class="timesheet-summary">
+        <h3>📊 Resumo do Mês</h3>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span>Total de Horas:</span>
+            <strong id="timesheet-total-hours">0h</strong>
+          </div>
+          <div class="summary-item">
+            <span>Dias Trabalhados:</span>
+            <strong id="timesheet-days-worked">0</strong>
+          </div>
+          <div class="summary-item">
+            <span>Horas Extras:</span>
+            <strong id="timesheet-overtime">0h</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="timesheet-calendar">
+        <h3>📅 Histórico</h3>
+        <div id="timesheet-history" class="timesheet-list"></div>
+      </div>
+    </section>
+
+    <!-- Metas e Desempenho -->
+    <section id="employee-goals" class="view">
+      <h2>🎯 Metas & Desempenho</h2>
+      
+      <div class="goals-overview">
+        <div class="goal-card">
+          <h3>Metas do Mês Atual</h3>
+          <div class="progress-circle">
+            <div class="progress-value" id="goals-progress">0%</div>
+          </div>
+          <p class="text-muted">Progresso geral</p>
+        </div>
+      </div>
+
+      <div class="goals-list">
+        <h3>📋 Minhas Metas</h3>
+        <div id="active-goals" class="goals-grid"></div>
+      </div>
+
+      <div class="performance-section">
+        <h3>📈 Avaliações de Desempenho</h3>
+        <div id="performance-reviews" class="reviews-list"></div>
+      </div>
+    </section>
+
+    <!-- Documentos do Funcionário -->
+    <section id="employee-documents" class="view">
+      <h2>📁 Meus Documentos</h2>
+      
+      <div class="documents-categories">
+        <div class="doc-category">
+          <h3>💰 Holerites</h3>
+          <div id="payslips-list" class="documents-list"></div>
+        </div>
+
+        <div class="doc-category">
+          <h3>📄 Contratos</h3>
+          <div id="contracts-list" class="documents-list"></div>
+        </div>
+
+        <div class="doc-category">
+          <h3>📢 Comunicados</h3>
+          <div id="announcements-list" class="documents-list"></div>
+        </div>
+
+        <div class="doc-category">
+          <h3>📎 Outros Documentos</h3>
+          <div id="other-docs-list" class="documents-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chat com IA -->
+    <section id="employee-chat" class="view">
+      <h2>🤖 Chat com Assistente IA do RH</h2>
+      <p class="subtitle">Tire suas dúvidas sobre políticas, benefícios, procedimentos e mais!</p>
+      
+      <div class="chat-container-full">
+        <div id="chat-messages" class="chat-messages-full"></div>
+        <form id="chat-form" class="chat-input-full">
+          <input type="text" id="chat-input" placeholder="Digite sua dúvida..." required />
+          <button type="submit" class="btn-primary">📤 Enviar</button>
+        </form>
       </div>
     </section>
 

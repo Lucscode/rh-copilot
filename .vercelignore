@@ -1,0 +1,16 @@
+backend/
+.env
+*.db
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/
+.git/
+deploy/
+alembic/
+tests/
+*.log
+.DS_Store
+docker-compose.yml
+Dockerfile
