@@ -9,40 +9,51 @@
 // Configuração da API - Supabase ou Backend Local
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-// Para usar Supabase, defina estas variáveis no Vercel:
-// VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY
+// Variáveis de Supabase (carregadas dinamicamente)
+let SUPABASE_URL = '';
+let SUPABASE_KEY = '';
+let USE_SUPABASE = false;
+let API_BASE = '/api';
 
-// Tenta obter de múltiplas fontes:
-// 1. window.ENV (injetado no HTML)
-// 2. window.__ENV__ (alternativa)
-// 3. variáveis globais
-const SUPABASE_URL = (
-  window.ENV?.VITE_SUPABASE_URL || 
-  window.__ENV__?.VITE_SUPABASE_URL || 
-  window.VITE_SUPABASE_URL || 
-  ''
-);
-const SUPABASE_KEY = (
-  window.ENV?.VITE_SUPABASE_ANON_KEY || 
-  window.__ENV__?.VITE_SUPABASE_ANON_KEY || 
-  window.VITE_SUPABASE_ANON_KEY || 
-  ''
-);
+// ============================================
+// CARREGAMENTO DE CONFIGURAÇÃO
+// ============================================
 
-console.log('[Config] SUPABASE_URL:', SUPABASE_URL ? '✓ Detectado' : '✗ Não configurado');
-console.log('[Config] SUPABASE_KEY:', SUPABASE_KEY ? '✓ Detectado' : '✗ Não configurado');
-
-// Se Supabase estiver configurado, usa Supabase, senão usa backend local
-const USE_SUPABASE = SUPABASE_URL && SUPABASE_KEY;
-
-// Se em desenvolvimento (localhost) usa /api, se em produção (Vercel) e tiver Supabase usa Supabase, senão tenta /api
-let API_BASE;
-if (isLocal) {
-  API_BASE = '/api';
-} else if (USE_SUPABASE) {
-  API_BASE = `${SUPABASE_URL}/rest/v1`;
-} else {
-  API_BASE = '/api'; // Fallback para mesmo domínio
+async function loadConfig() {
+  try {
+    // Se for localhost, tenta usar backend local
+    if (isLocal) {
+      API_BASE = '/api';
+      USE_SUPABASE = false;
+      console.log('[Config] Modo: Backend Local (localhost)');
+      return;
+    }
+    
+    // Se for em produção, tenta carregar config da API
+    const response = await fetch('/api/env');
+    if (response.ok) {
+      const config = await response.json();
+      SUPABASE_URL = config.VITE_SUPABASE_URL || '';
+      SUPABASE_KEY = config.VITE_SUPABASE_ANON_KEY || '';
+      
+      if (SUPABASE_URL && SUPABASE_KEY) {
+        USE_SUPABASE = true;
+        API_BASE = `${SUPABASE_URL}/rest/v1`;
+        console.log('[Config] SUPABASE_URL: ✓ Detectado');
+        console.log('[Config] SUPABASE_KEY: ✓ Detectado');
+        console.log('[Config] Modo: Supabase');
+      } else {
+        console.log('[Config] Supabase não configurado, usando /api como fallback');
+        API_BASE = '/api';
+      }
+    } else {
+      console.log('[Config] Erro ao carregar config, usando /api como fallback');
+      API_BASE = '/api';
+    }
+  } catch (error) {
+    console.error('[Config] Erro ao carregar configuração:', error);
+    API_BASE = '/api'; // Fallback
+  }
 }
 
 let currentUser = null;
@@ -54,8 +65,12 @@ console.log('[Config] Modo:', USE_SUPABASE ? 'Supabase' : 'Backend Local');
 // INICIALIZAÇÃO
 // ============================================
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   console.log('[RH Copilot] Iniciando aplicação...');
+  
+  // Carrega configuração ANTES de qualquer outra coisa
+  await loadConfig();
+  
   loadAuthFromStorage();
   setupAllEventListeners();
   updateUIBasedOnAuth();
