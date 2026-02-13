@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "rh-copilot",
-  "outputDirectory": "public",
+  "buildCommand": "cp -r public/* . || true",
   "builds": [
     {
       "src": "api/**",
