@@ -21,15 +21,19 @@ let API_BASE = '/api';
 
 async function loadConfig() {
   try {
-    // Se for localhost, tenta usar backend local
+    // SEMPRE usar /api (FastAPI backend)
+    // Supabase é usado apenas como banco de dados pelo backend
+    API_BASE = '/api';
+    USE_SUPABASE = false;
+    
+    // Se for localhost
     if (isLocal) {
-      API_BASE = '/api';
-      USE_SUPABASE = false;
       console.log('[Config] Modo: Backend Local (localhost)');
       return;
     }
     
-    // Se for em produção, tenta carregar config da API
+    // Se for produção, verifica se Supabase está configurado
+    // (apenas para logging, não muda o API_BASE)
     const response = await fetch('/api/env');
     if (response.ok) {
       const config = await response.json();
@@ -37,18 +41,12 @@ async function loadConfig() {
       SUPABASE_KEY = config.VITE_SUPABASE_ANON_KEY || '';
       
       if (SUPABASE_URL && SUPABASE_KEY) {
-        USE_SUPABASE = true;
-        API_BASE = `${SUPABASE_URL}/rest/v1`;
         console.log('[Config] SUPABASE_URL: ✓ Detectado');
         console.log('[Config] SUPABASE_KEY: ✓ Detectado');
-        console.log('[Config] Modo: Supabase');
+        console.log('[Config] Modo: Backend FastAPI (Supabase como DB)');
       } else {
-        console.log('[Config] Supabase não configurado, usando /api como fallback');
-        API_BASE = '/api';
+        console.log('[Config] Modo: Backend FastAPI (sem Supabase configurado)');
       }
-    } else {
-      console.log('[Config] Erro ao carregar config, usando /api como fallback');
-      API_BASE = '/api';
     }
   } catch (error) {
     console.error('[Config] Erro ao carregar configuração:', error);
@@ -195,9 +193,9 @@ function getHeaders() {
     'Content-Type': 'application/json'
   };
   
-  if (USE_SUPABASE && SUPABASE_KEY) {
-    headers['apikey'] = SUPABASE_KEY;
-    headers['Authorization'] = `Bearer ${authToken || ''}`;
+  // Se tiver token de autenticação, adiciona no header
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
   }
   
   return headers;
@@ -216,7 +214,7 @@ async function handleLogin(e) {
   const resultDiv = document.getElementById('login-result');
 
   console.log('[Login] Email:', email);
-  console.log('[Login] Usando Supabase:', USE_SUPABASE);
+  console.log('[Login] API Base:', API_BASE);
 
   try {
     const response = await fetch(`${API_BASE}/auth/login`, {
