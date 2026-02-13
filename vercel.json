@@ -3,10 +3,6 @@
   "name": "rh-copilot",
   "builds": [
     {
-      "src": "frontend/**",
-      "use": "@vercel/static"
-    },
-    {
       "src": "api/**",
       "use": "@vercel/node"
     }
@@ -15,6 +11,18 @@
     {
       "src": "/api/(.*)",
       "dest": "/api/$1"
+    },
+    {
+      "src": "/styles.css",
+      "dest": "/frontend/styles.css"
+    },
+    {
+      "src": "/app.js",
+      "dest": "/frontend/app.js"
+    },
+    {
+      "src": "/(.*\\.[a-z]+)$",
+      "dest": "/frontend/$1"
     },
     {
       "src": "/(.*)",

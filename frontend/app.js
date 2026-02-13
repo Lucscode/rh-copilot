@@ -187,6 +187,23 @@ function switchAuthTab(tabName) {
 }
 
 // ============================================
+// HELPER PARA REQUISIÇÕES COM HEADERS
+// ============================================
+
+function getHeaders() {
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (USE_SUPABASE && SUPABASE_KEY) {
+    headers['apikey'] = SUPABASE_KEY;
+    headers['Authorization'] = `Bearer ${authToken || ''}`;
+  }
+  
+  return headers;
+}
+
+// ============================================
 // HANDLERS DE AUTENTICAÇÃO
 // ============================================
 
@@ -199,11 +216,12 @@ async function handleLogin(e) {
   const resultDiv = document.getElementById('login-result');
 
   console.log('[Login] Email:', email);
+  console.log('[Login] Usando Supabase:', USE_SUPABASE);
 
   try {
     const response = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getHeaders(),
       body: JSON.stringify({ email, password })
     });
 
@@ -224,8 +242,8 @@ async function handleLogin(e) {
         if (resultDiv) resultDiv.innerHTML = '';
       }, 500);
     } else {
-      console.error('[Login] Erro no login:', data.detail);
-      showErrorMessage(resultDiv, data.detail || 'Erro ao fazer login');
+      console.error('[Login] Erro no login:', data.detail || data.message);
+      showErrorMessage(resultDiv, data.detail || data.message || 'Erro ao fazer login');
     }
   } catch (error) {
     console.error('[Login] Erro na requisição:', error);
@@ -251,7 +269,7 @@ async function handleRegister(e) {
   try {
     const response = await fetch(`${API_BASE}/auth/register`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getHeaders(),
       body: JSON.stringify({ name, email, password, role: 'funcionario' })
     });
 
@@ -267,7 +285,7 @@ async function handleRegister(e) {
         if (resultDiv) resultDiv.innerHTML = '';
       }, 500);
     } else {
-      showErrorMessage(resultDiv, data.detail || 'Erro no registro');
+      showErrorMessage(resultDiv, data.detail || data.message || 'Erro no registro');
     }
   } catch (error) {
     showErrorMessage(resultDiv, `Erro: ${error.message}`);
