@@ -1,10 +1,28 @@
 {
   "version": 2,
+  "name": "rh-copilot",
+  "regions": ["sao1"],
   "public": "frontend",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*\\.,.*|(?:\\.(?!html?$)\\S+$))",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/$1"
+    },
+    {
+      "src": "/(?:(?!\\.).)*",
+      "dest": "/index.html"
     }
   ]
 }

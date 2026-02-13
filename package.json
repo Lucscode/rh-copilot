@@ -1,0 +1,9 @@
+{
+  "name": "rh-copilot",
+  "version": "1.0.0",
+  "description": "RH Copilot - Sistema de Gestão de RH e Funcionários",
+  "scripts": {
+    "build": "true"
+  },
+  "private": true
+}
