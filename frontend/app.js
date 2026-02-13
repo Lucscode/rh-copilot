@@ -16,7 +16,16 @@ const SUPABASE_KEY = window.ENV?.VITE_SUPABASE_ANON_KEY || '';
 
 // Se Supabase estiver configurado, usa Supabase, senão usa backend local
 const USE_SUPABASE = SUPABASE_URL && SUPABASE_KEY;
-const API_BASE = USE_SUPABASE ? `${SUPABASE_URL}/rest/v1` : (isLocal ? '/api' : 'https://api.lamtech.org/api');
+
+// Se em desenvolvimento (localhost) usa /api, se em produção (Vercel) e tiver Supabase usa Supabase, senão tenta /api
+let API_BASE;
+if (isLocal) {
+  API_BASE = '/api';
+} else if (USE_SUPABASE) {
+  API_BASE = `${SUPABASE_URL}/rest/v1`;
+} else {
+  API_BASE = '/api'; // Fallback para mesmo domínio
+}
 
 let currentUser = null;
 let authToken = null;
