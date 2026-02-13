@@ -1,8 +1,9 @@
 {
   "version": 2,
   "name": "rh-copilot",
-  "buildCommand": "echo 'Skipping build'",
-  "public": true,
+  "public": false,
+  "buildCommand": "echo 'Build complete'",
+  "outputDirectory": "frontend",
   "rewrites": [
     {
       "source": "/api/:path*",
