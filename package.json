@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "RH Copilot - Sistema de Gestão de RH e Funcionários",
   "scripts": {
-    "build": "true"
+    "build": "echo 'Building RH Copilot frontend...' && npm run inject-env",
+    "inject-env": "node -e \"const fs=require('fs');let html=fs.readFileSync('frontend/index.html','utf8');html=html.replace('%VITE_SUPABASE_URL%',process.env.VITE_SUPABASE_URL||'').replace('%VITE_SUPABASE_ANON_KEY%',process.env.VITE_SUPABASE_ANON_KEY||'');fs.writeFileSync('frontend/index.html',html);\""
   },
   "private": true
 }
+

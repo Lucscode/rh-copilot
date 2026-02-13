@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>RH Copilot - Sistema Inteligente de Gestão de Talentos</title>
   <link rel="stylesheet" href="/styles.css" />
+  
+  <!-- Script para injetar variáveis de ambiente do Vercel -->
+  <script>
+    // Injeta as variáveis de ambiente expostas pelo Vercel
+    window.VITE_SUPABASE_URL = '%VITE_SUPABASE_URL%';
+    window.VITE_SUPABASE_ANON_KEY = '%VITE_SUPABASE_ANON_KEY%';
+    console.log('[Env] Variáveis injetadas do Vercel');
+  </script>
 </head>
 <body>
   <!-- Header Principal -->

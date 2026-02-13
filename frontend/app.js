@@ -11,8 +11,26 @@ const isLocal = window.location.hostname === 'localhost' || window.location.host
 
 // Para usar Supabase, defina estas variáveis no Vercel:
 // VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY
-const SUPABASE_URL = window.ENV?.VITE_SUPABASE_URL || '';
-const SUPABASE_KEY = window.ENV?.VITE_SUPABASE_ANON_KEY || '';
+
+// Tenta obter de múltiplas fontes:
+// 1. window.ENV (injetado no HTML)
+// 2. window.__ENV__ (alternativa)
+// 3. variáveis globais
+const SUPABASE_URL = (
+  window.ENV?.VITE_SUPABASE_URL || 
+  window.__ENV__?.VITE_SUPABASE_URL || 
+  window.VITE_SUPABASE_URL || 
+  ''
+);
+const SUPABASE_KEY = (
+  window.ENV?.VITE_SUPABASE_ANON_KEY || 
+  window.__ENV__?.VITE_SUPABASE_ANON_KEY || 
+  window.VITE_SUPABASE_ANON_KEY || 
+  ''
+);
+
+console.log('[Config] SUPABASE_URL:', SUPABASE_URL ? '✓ Detectado' : '✗ Não configurado');
+console.log('[Config] SUPABASE_KEY:', SUPABASE_KEY ? '✓ Detectado' : '✗ Não configurado');
 
 // Se Supabase estiver configurado, usa Supabase, senão usa backend local
 const USE_SUPABASE = SUPABASE_URL && SUPABASE_KEY;
