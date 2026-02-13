@@ -1,8 +1,7 @@
 {
   "version": 2,
   "name": "rh-copilot",
-  "buildCommand": "cp -r frontend/* .",
-  "outputDirectory": ".",
+  "outputDirectory": "public",
   "builds": [
     {
       "src": "api/**",
