@@ -391,6 +391,15 @@ function showNavigationForRole(role) {
   // Esconde todas as navegações
   document.querySelectorAll('.nav-section').forEach(section => section.classList.add('hidden'));
 
+  if (DISABLE_LOGIN) {
+    console.log('[Navigation] Modo demo, mostrando RH e Admin...');
+    document.getElementById('nav-rh')?.classList.remove('hidden');
+    document.getElementById('nav-admin')?.classList.remove('hidden');
+    showView('rh-dashboard');
+    loadRHDashboard();
+    return;
+  }
+
   // Mostra navegação apropriada e view inicial
   if (role === 'rh') {
     console.log('[Navigation] Mostrando painel RH...');

@@ -15,6 +15,15 @@ let SUPABASE_KEY = '';
 let USE_SUPABASE = false;
 let API_BASE = '/api';
 
+// Toggle temporario: desativa login e mostra somente RH + Admin
+const DISABLE_LOGIN = true;
+const BYPASS_ADMIN_USER = {
+  id: 'admin-local',
+  name: 'Admin',
+  email: 'admin@local',
+  role: 'admin'
+};
+
 // ============================================
 // CARREGAMENTO DE CONFIGURAÇÃO
 // ============================================
@@ -70,6 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadConfig();
   
   loadAuthFromStorage();
+  applyLoginBypass();
   setupAllEventListeners();
   updateUIBasedOnAuth();
   console.log('[RH Copilot] Aplicação iniciada com sucesso!');
@@ -108,9 +118,26 @@ function clearAuth() {
 }
 
 function logout() {
+  if (DISABLE_LOGIN) {
+    return;
+  }
   clearAuth();
   updateUIBasedOnAuth();
   showView('auth-view');
+}
+
+function applyLoginBypass() {
+  if (!DISABLE_LOGIN) {
+    return;
+  }
+
+  if (!currentUser) {
+    currentUser = { ...BYPASS_ADMIN_USER };
+  }
+
+  if (!authToken) {
+    authToken = 'bypass-token';
+  }
 }
 
 // ============================================
@@ -319,10 +346,13 @@ function updateUIBasedOnAuth() {
   console.log('[UI] Current User:', currentUser);
   console.log('[UI] Auth Token:', authToken ? 'presente' : 'ausente');
 
+  applyLoginBypass();
+
   const header = document.getElementById('main-header');
   const sidebar = document.getElementById('sidebar');
   const userInfo = document.getElementById('user-info');
   const authView = document.getElementById('auth-view');
+  const logoutBtn = document.getElementById('logout-btn');
 
   if (currentUser && authToken) {
     console.log('[UI] Usuário autenticado, mostrando interface...');
@@ -331,6 +361,9 @@ function updateUIBasedOnAuth() {
     sidebar?.classList.remove('hidden');
     userInfo?.classList.remove('hidden');
     authView?.classList.add('hidden');
+    if (DISABLE_LOGIN) {
+      logoutBtn?.classList.add('hidden');
+    }
 
     const userDisplay = document.getElementById('user-display');
     if (userDisplay) {
@@ -355,6 +388,15 @@ function showNavigationForRole(role) {
   
   // Esconde todas as navegações
   document.querySelectorAll('.nav-section').forEach(section => section.classList.add('hidden'));
+
+  if (DISABLE_LOGIN) {
+    console.log('[Navigation] Modo demo, mostrando RH e Admin...');
+    document.getElementById('nav-rh')?.classList.remove('hidden');
+    document.getElementById('nav-admin')?.classList.remove('hidden');
+    showView('rh-dashboard');
+    loadRHDashboard();
+    return;
+  }
 
   // Mostra navegação apropriada e view inicial
   if (role === 'rh') {
